@@ -1035,7 +1035,7 @@ function selectedMigrationBarAndAgeDoughnut(selection, data_file, colourScale) {
         if (selected_data_type == "immigration") {
             doughnutChartContent(selected_year, selected_country, selected_gender, data_file, colourScale);
         } else {
-            d3.select("#age_doughnut_svg").remove();
+            d3.select("#age_doughnut_svg").selectAll("g").remove();
         }
 
     } else if (selected_year !== null && selected_country !== null) {
@@ -1047,7 +1047,7 @@ function selectedMigrationBarAndAgeDoughnut(selection, data_file, colourScale) {
         if (selected_data_type == "immigration") {
             doughnutChartContent(selected_year, selected_country, default_gender_selection, data_file, colourScale);
         } else {
-            d3.select("#age_doughnut_svg").remove();
+            d3.select("#age_doughnut_svg").selectAll("g").remove();
         }
 
     }
@@ -1583,32 +1583,31 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
 
             heading.append("text").attrs({
 
-                    "text-anchor": "middle",
-                    "dominant-baseline": "middle",
-                    "x": "50%",
-                    "y": "50%"
+                "text-anchor": "middle",
+                "dominant-baseline": "middle",
+                "x": "50%",
+                "y": "50%"
 
-                })
-                .html(function() {
+            }).html(function() {
 
-                    if (data_type == "emmigration") {
+                if (data_type == "emmigration") {
 
-                        var text = `<tspan class="graph_heading">These <tspan fill="${color}">${this_lot.length}</tspan> Bars are Showing Destinations\
+                    var text = `<tspan class="graph_heading">These <tspan fill="${color}">${this_lot.length}</tspan> Bars are Showing Destinations\
                      of <tspan fill="${color}"> 
                     ${((calculateTotal(this_lot) / total_migration) * 100).toFixed(4)}% </tspan>
                     Emmigrants from the year <tspan fill="${color}">${year}</tspan></tspan>`;
 
-                        return text
+                    return text
 
-                    } else if (data_type == "immigration") {
-                        var text = `<tspan class="graph_heading">These <tspan fill="${color}">${this_lot.length}</tspan> Bars are Showing Origins\
+                } else if (data_type == "immigration") {
+                    var text = `<tspan class="graph_heading">These <tspan fill="${color}">${this_lot.length}</tspan> Bars are Showing Origins\
                      of <tspan fill="${color}"> 
                     ${((calculateTotal(this_lot) / total_migration) * 100).toFixed(4)}% </tspan>
                     Immigrants from the year <tspan fill="${color}">${year}</tspan></tspan>`
 
-                        return text
-                    }
-                });
+                    return text
+                }
+            });
         }
 
         function showMoreAndPreviousButtons() {
@@ -1957,13 +1956,14 @@ function doughnutChartContent(year, country, gender, data_file, colourScale) {
 }
 
 function drawAgeDoughnutChart(age_data, gender, colourScale) {
+
     d3.select("#age_doughnut_svg").remove();
     var ring_chart = d3.select("#ring_chart");
 
     var svgDimension = {
 
-        "width": ring_chart.node().getBoundingClientRect().width,
-        "height": ring_chart.node().getBoundingClientRect().height,
+        "width": 745, //ring_chart.node().getBoundingClientRect().width,
+        "height": 408, //ring_chart.node().getBoundingClientRect().height,
         "margin": 40
 
     };
