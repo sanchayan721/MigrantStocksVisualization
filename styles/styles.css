@@ -1,0 +1,525 @@
+/* Font Styles */
+
+@font-face {
+    font-family: 'Roboto';
+    src: url("assets/fonts/roboto-v27-latin-regular.eot");
+    /* IE9 Compat Modes */
+    src: url("/assets/fonts/roboto-v27-latin-regular.eot") format('embedded-opentype'), /* IE6-IE8 */
+    url("assets/fonts/roboto-v27-latin-regular.woff") format('woff'), /* Modern Browsers */
+    url("assets/fonts/roboto-v27-latin-regular.ttf") format('truetype'), /* Safari, Android, iOS */
+    url("assets/fonts/roboto-v27-latin-regular.svg") format('svg');
+    /* Legacy iOS */
+}
+
+@font-face {
+    font-family: "Roboto";
+    src: url("assets/fonts/Roboto-Thin.ttf");
+    font-weight: 100;
+}
+
+@font-face {
+    font-family: "Roboto";
+    src: url("assets/fonts/Roboto-Light.ttf");
+    font-weight: 200;
+}
+
+
+/* Format of Preset */
+
+pre {
+    font-family: 'Roboto', sans-serif;
+    height: fit-content;
+    width: fit-content;
+    margin: 0px;
+}
+
+
+/* Tip text Format*/
+
+.tip_text {
+    text-align: center;
+    font-size: 0.9em;
+}
+
+
+/* Body and Scroll Bar and Misclenious Others*/
+
+html {
+    width: fit-content;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    position: relative;
+}
+
+
+/* Different Views */
+
+#graphs {
+    width: 100%;
+    height: fit-content;
+}
+
+#map_view {
+    background: white;
+}
+
+#line_chart {
+    background-color: white;
+}
+
+#bar_chart {
+    background: white;
+    position: relative;
+    z-index: 1;
+}
+
+#no_data {
+    width: 100%;
+    height: fit-content;
+    padding: 5%;
+    background-color: rgb(231, 177, 177);
+    color: red;
+    -webkit-box-shadow: 0 2px 8px .1px #6b6b6b;
+    box-shadow: 0 1px 2px 0.05px #6d6d6d;
+    text-align: center;
+    transition-delay: 800ms;
+}
+
+
+/* Grid Style*/
+
+.double_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+    padding-top: 10px;
+}
+
+
+/* Heading Styles */
+
+#header {
+    width: 100%;
+    height: fit-content;
+    background-color: #1D9913;
+    -webkit-box-shadow: 0 2px 8px .1px #6b6b6b;
+    box-shadow: 0 2px 8px .1px #6d6d6d;
+}
+
+#title {
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
+    padding-left: 2%;
+    padding-right: 2%;
+    height: fit-content;
+    font-size: 1.5em;
+    font-weight: 200;
+    color: white;
+}
+
+#authors {
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
+    padding-left: 1%;
+    padding-right: 1%;
+    height: fit-content;
+    background-color: white;
+}
+
+#sanchayan,
+#moses {
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
+    padding-left: 2%;
+    padding-right: 2%;
+    color: #1D9913;
+    font-size: 0.8em;
+}
+
+
+/* Heading Minimize Button Styles */
+
+#minimize_header {
+    display: inline;
+    position: absolute;
+    right: 1%;
+    top: 0;
+    z-index: 99999;
+    user-select: none;
+    transition-duration: 200ms;
+}
+
+#button_text {
+    text-anchor: middle;
+}
+
+.minimize_header_maximized {
+    opacity: 100%;
+}
+
+.minimize_header_minimized {
+    opacity: 20%;
+}
+
+.minimize_header_minimized:hover {
+    opacity: 100%;
+}
+
+
+/* Map Styles */
+
+#world_map {
+    cursor: pointer;
+}
+
+#map-tip {
+    color: #99131c;
+}
+
+.countries {
+    fill: #c5c5c5;
+    stroke: #fff;
+    stroke-width: 0.3;
+    transition-duration: 800ms;
+}
+
+.countries:hover {
+    fill: #C70039;
+    opacity: 0.5;
+    stroke-width: 0.6;
+    stroke: white;
+    transition-duration: 900ms;
+}
+
+.lagend_selected_country {
+    fill: #edb400;
+    stroke: #fff;
+    stroke-width: 0.6;
+    transition-duration: 800ms;
+}
+
+.selectedCountry {
+    fill: #C70039;
+    stroke: white;
+    stroke-width: 0.8;
+}
+
+
+/* Data Selection Lagend */
+
+.dataLagendText {
+    font-size: 0.7em;
+    font-weight: 600;
+    user-select: none;
+}
+
+
+/* Tooltip Over Map */
+
+.d3-tip {
+    line-height: 1;
+    font-size: 0.7em;
+    padding: 8px;
+    -webkit-box-shadow: 0 2px 8px .1px #6b6b6b;
+    box-shadow: 0 1px 2px 0.05px #6d6d6d;
+    background: white;
+    color: black;
+    z-index: 999;
+    transition-timing-function: ease-in-out;
+    transition-duration: 200ms;
+}
+
+.d3-tip.n::after {
+    margin: -1px 0 0 0;
+    top: 100%;
+    left: 0;
+}
+
+.destination {
+    stroke: white;
+    stroke-width: 0.3;
+    transition-duration: 800ms;
+}
+
+.destination:hover {
+    fill: #99131c;
+    opacity: 0.5;
+    stroke-width: 0.6;
+    transition-duration: 800ms;
+}
+
+
+/* Connector strings of map */
+
+.connector_string {
+    fill: none;
+    stroke-width: 2px;
+    opacity: 95%;
+    z-index: 9999;
+}
+
+.connector_string_arrowHead {
+    fill: #F57F17;
+    stroke: white;
+    stroke-width: 0.2px;
+}
+
+#path_shadow {
+    fill: none;
+    stroke-width: 2px;
+    stroke-opacity: 12%;
+}
+
+
+/* Lagends of map */
+
+.lagend {
+    display: relative;
+}
+
+.lagend_bar {
+    stroke-width: 0px;
+    transition-duration: 200ms;
+}
+
+.lagend_bar:hover {
+    fill: #edb400;
+    opacity: 60%;
+    transition-duration: 200ms;
+}
+
+.lagend_bar_selected {
+    fill: #edb400;
+    stroke-width: 0.5px;
+    opacity: 100%;
+    stroke: #edb400;
+    transition-duration: 200ms;
+    z-index: 9999;
+}
+
+.colorLagendText {
+    text-anchor: end;
+    font-size: 0.55em;
+    user-select: none;
+}
+
+
+/* Stacked Bar Chart*/
+
+.xyStackedBarAxis {
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.9em;
+    user-select: none;
+}
+
+.stackedBarSelected {
+    filter: brightness(130%);
+    transition-duration: 200ms;
+}
+
+.male_female_bar {
+    opacity: 100%;
+    transition-duration: 200ms;
+}
+
+.male_female_bar:hover {
+    opacity: 60%;
+    transition-duration: 200ms;
+}
+
+
+/* Stacked Bar Chart Heading*/
+
+#stacked_bar_title {
+    fill: black;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+hr {
+    border: 1px dashed black;
+    border-style: none none dashed;
+    color: #fff;
+    background-color: #fff;
+}
+
+
+/* tooltip of the Barchart */
+
+.d3-tip-stacked-bar {
+    line-height: fit-content;
+    font-size: 0.7em;
+    padding: 8px;
+    -webkit-box-shadow: 0 2px 8px .1px #6b6b6b;
+    box-shadow: 0 1px 2px 0.05px #6d6d6d;
+    background: white;
+    color: black;
+    z-index: 99;
+    transition-timing-function: ease-in-out;
+    transition-duration: 100ms;
+}
+
+.d3-tip-stacked-bar::after {
+    box-sizing: border-box;
+    display: inline;
+    width: 100%;
+    line-height: fit-content;
+    color: white;
+    content: "\25BC";
+    text-shadow: 0px 1px 2px #6d6d6d;
+    position: absolute;
+    text-align: center;
+    z-index: 99;
+}
+
+.d3-tip-stacked-bar.n::after {
+    margin: -1px 0 0 0;
+    top: 100%;
+    left: 0;
+}
+
+
+/* Gender Lagend */
+
+.genderLagendText {
+    text-anchor: start;
+    font-size: 0.7em;
+    font-weight: 600;
+    user-select: none;
+}
+
+
+/* Bar Chart Styles */
+
+.graph_heading {
+    fill: black;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.showExtra {
+    text-anchor: middle;
+    font-size: 0.6em;
+    fill: #6b6b6b;
+    opacity: 60%;
+    transition-duration: 800ms;
+    user-select: none;
+    cursor: pointer;
+}
+
+.showExtra:hover {
+    fill: black;
+    opacity: 100%;
+    transition-duration: 200ms;
+}
+
+.selectedCountryName {
+    fill: #C70039;
+}
+
+.mybar:hover {
+    opacity: 60%;
+    transition-duration: 500ms;
+}
+
+#selection_on_bar {
+    filter: brightness(130%);
+}
+
+.xyBarAxis {
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.9em;
+    user-select: none;
+}
+
+
+/* Bar Chart Show More Button Style*/
+
+#show_more_svg {
+    position: absolute;
+    opacity: 90%;
+    transition-duration: 200ms;
+}
+
+#show_more_svg:hover {
+    opacity: 100%;
+    transition-duration: 200ms;
+}
+
+
+/* tooltip of the Barchart */
+
+.d3-tip-bar {
+    line-height: fit-content;
+    font-size: 0.7em;
+    padding: 8px;
+    -webkit-box-shadow: 0 2px 8px .1px #6b6b6b;
+    box-shadow: 0 1px 2px 0.05px #6d6d6d;
+    background: white;
+    color: black;
+    z-index: 99;
+    transition-timing-function: ease-in-out;
+    transition-duration: 100ms;
+}
+
+.d3-tip-bar::after {
+    box-sizing: border-box;
+    display: inline;
+    width: 100%;
+    line-height: fit-content;
+    color: white;
+    content: "\25BC";
+    text-shadow: 0px 1px 2px #6d6d6d;
+    position: absolute;
+    text-align: center;
+    z-index: 99;
+}
+
+.d3-tip-bar.n::after {
+    margin: -1px 0 0 0;
+    top: 100%;
+    left: 0;
+}
+
+
+/* Ring Chart Styles */
+
+.small_graph_heading {
+    fill: black;
+    font-size: 0.8em;
+    font-weight: 400;
+}
+
+.inner_arc_html {
+    text-anchor: middle;
+    font-size: 1em;
+    font-weight: 200;
+}
+
+
+/* Age Demographics Doughnut*/
+
+#age_doughnut_heading {
+    fill: black;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+#inner_doughnut_html {
+    text-anchor: middle;
+    font-size: 2em;
+    font-weight: 300;
+}
+
+.highlighted_ageGroup_arc {
+    transform: scale(1.03);
+}
+
+.highlighted_ageGroup_lagend {
+    opacity: 0.8;
+}
