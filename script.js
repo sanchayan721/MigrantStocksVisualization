@@ -1,14 +1,16 @@
 function drawHeadingAreaWithButton() {
-
+    // This is the section where I make the author object with names and Matricola
     author_dict = [{ name: "Sanchayan Bhunia", matricola: 4849650, e_mail: "s4849650@studenti.unige.it" },
         { name: "Moses Mbabaali", matricola: 4846019, e_mail: "s4846019@studenti.unige.it" }
     ];
 
+    // I select the body of the HTML and append the heading area where the author information will stay
     body = d3.select("body");
     heading = body.append("div").attr("id", "header");
 
-    drawHeadingArea(heading, author_dict);
+    drawHeadingArea(heading, author_dict); // I draw the Heading area with this method
 
+    // Onclick method of the Button present in the heading area
     buttonOnClick = function() {
 
         if (document.getElementById('title') == null) {
@@ -23,26 +25,32 @@ function drawHeadingAreaWithButton() {
         }
     };
 
-    showButton('minimize', buttonOnClick);
+    showButton('minimize', buttonOnClick); // Here I draw the button
 
 }
 
 function showButton(state, clickBehaviour) {
 
+    /*
+    This is the Button which is used to hide the heading area to get the user a little more space
+    real estate to work with the visualization and analysis.
+    */
+
     d3.select("#minimize_header").remove();
 
+    // I define the dimension of the button
     var button_parameters = { height: "40", width: "40", padding: "5", stroke_width: "2" }
 
-    minimize_button = d3.select("#header").append("svg")
-        .attr("id", "minimize_header")
-        .attr("class", function() {
+    minimize_button = d3.select("#header").append("svg") // I select the header and append an svg for the button
+        .attr("id", "minimize_header") // Name of the button
+        .attr("class", function() { // I will define the possible states of the button either minimized or maximized
             if (state == 'minimize') {
                 return "minimize_header_maximized"
             } else if (state == 'maximize') {
                 return "minimize_header_minimized"
             }
         })
-        .attr("height", button_parameters.height).attr("width", button_parameters.width)
+        .attr("height", button_parameters.height).attr("width", button_parameters.width) // 
         .on("mouseover", function() {
             if (state == 'minimize') {
                 d3.select("#button_circle")
@@ -111,7 +119,6 @@ function showButton(state, clickBehaviour) {
         .style("fill", "#9ca19c");
 }
 
-
 function drawHeadingArea(header, authors) {
 
     title = header.append("div").attr("id", "title");
@@ -127,7 +134,6 @@ function drawHeadingArea(header, authors) {
     (${authors[index].matricola}) <br> <strong>E-mail:</strong> ${authors[index].e_mail}`);
     });
 }
-
 
 function drawBodyArea() {
 
@@ -158,7 +164,6 @@ function drawBodyArea() {
 
     loadData(selection);
 }
-
 
 function loadData(selection) {
 
@@ -291,13 +296,6 @@ function mapContent(dataObject, selection) {
 
 function dataSelectionLagend(selection, dataObject) {
 
-    button_radius = 6;
-    line_length = 5;
-    group_spacing = 15;
-
-    types_of_data = ["immigration", "emmigration"];
-
-    world_map = d3.select("#map");
 
     selection.slice().reverse().every(function(element) {
 
@@ -307,6 +305,14 @@ function dataSelectionLagend(selection, dataObject) {
         else return true
     });
 
+    button_radius = 6;
+    line_length = 5;
+    group_spacing = 15;
+
+    types_of_data = ["immigration", "emmigration"];
+
+    world_map = d3.select("#map");
+
     dataLagend = world_map.append("g").attrs({
         "id": "data_selection_lagend",
         "transform": `translate(${world_map.node().getBBox().width - 50}, ${7.5})`,
@@ -315,6 +321,7 @@ function dataSelectionLagend(selection, dataObject) {
 
     oneGroup = dataLagend.selectAll("g")
         .data(types_of_data).enter().append("g").attrs({
+
             "id": function(d) { return d },
             "fill": function(d, i) {
                 if (d == "immigration") {
@@ -330,14 +337,15 @@ function dataSelectionLagend(selection, dataObject) {
                     return "#8080FC"
                 }
             },
-            "style": "cursor: pointer",
             "transform": function(d, i) {
                 if (i % 2 == 0) {
                     return `translate(${-2 * button_radius}, ${0})`
                 } else {
                     return `translate(${2 * button_radius}, ${0})`
                 }
-            }
+            },
+            "style": "cursor: pointer"
+
         });
 
     oneGroup.append("circle").attrs({
@@ -810,15 +818,14 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
 
         d3.select("#play_pause_button").remove();
 
-        button_data = { "radius": 15, "margin": 30 }
-
-        stackedBarChart = d3.select("#stacked_bar_chart");
-
         svg = d3.select("#stacked_bar_svg");
+
+        var buttonStyles = { "x": 300, "y": 280, "radius": 15 };
+
         button = svg.append("g").attrs({
             "id": "play_pause_button",
-            "transform": `translate(${stackedBarChart.node().getBoundingClientRect().width / 2 + button_data.radius}, 
-                            ${stackedBarChart.node().getBoundingClientRect().height - button_data.radius - button_data.margin})`
+            "transform": `translate(${buttonStyles.x}, ${buttonStyles.y})`,
+            "style": "cursor: pointer"
         });
 
         button.attr("class", function() {
@@ -834,7 +841,7 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
         button.append("circle").attrs({
             "cx": 0,
             "cy": 0,
-            "r": button_data.radius,
+            "r": buttonStyles.radius,
             "fill": function(d) { if (d == "play") { return "green" } else if (d == "pause") { return "#C70D39" } }
         });
 
@@ -1027,6 +1034,8 @@ function selectedMigrationBarAndAgeDoughnut(selection, data_file, colourScale) {
 
         if (selected_data_type == "immigration") {
             doughnutChartContent(selected_year, selected_country, selected_gender, data_file, colourScale);
+        } else {
+            d3.select("#age_doughnut_svg").remove();
         }
 
     } else if (selected_year !== null && selected_country !== null) {
@@ -1037,6 +1046,8 @@ function selectedMigrationBarAndAgeDoughnut(selection, data_file, colourScale) {
 
         if (selected_data_type == "immigration") {
             doughnutChartContent(selected_year, selected_country, default_gender_selection, data_file, colourScale);
+        } else {
+            d3.select("#age_doughnut_svg").remove();
         }
 
     }
@@ -1369,13 +1380,27 @@ function colorLagend(colourscale, domain, list_to_highlight) {
 
 function drawBarChart(data_type, year, list_of_countries_to_plot, selected_country, total_migration, list_of_countries_to_plot_untouched, color) {
 
-    doughnutGipfs =
-        d3.select("#bar_chart").selectAll("#heading_svg, #show_more_svg, #bar_svg").remove();
+
+    d3.select("#bar_chart").selectAll("#heading_svg, #show_more_svg, #bar_svg").remove();
     d3.selectAll("#bar_tip").remove();
 
     var number_of_countries_to_visualize = 16;
-    var zipfs = list_of_countries_to_plot.slice(1, number_of_countries_to_visualize);
-    var others = list_of_countries_to_plot.slice(1);
+
+    var this_lot = list_of_countries_to_plot.slice(1, number_of_countries_to_visualize);
+    var next_lot = list_of_countries_to_plot.slice(1);
+
+
+    var previous_item_index = list_of_countries_to_plot_untouched.length - next_lot.length
+
+    if (list_of_countries_to_plot_untouched[previous_item_index - 2] !== undefined) {
+
+        previous_lot = [list_of_countries_to_plot_untouched[previous_item_index - 1], ...list_of_countries_to_plot];
+
+    } else {
+
+        previous_lot = null;
+
+    }
 
     function calculateTotal(array) {
         var migrant_total = 0;
@@ -1385,7 +1410,7 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
         return migrant_total;
     }
 
-    if (list_of_countries_to_plot.length < number_of_countries_to_visualize - 1) {
+    if (this_lot.length < number_of_countries_to_visualize - 1) {
 
         drawBarChart(data_type, year, list_of_countries_to_plot_untouched, selected_country, total_migration, list_of_countries_to_plot_untouched, color);
 
@@ -1395,80 +1420,10 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
             width = 600 - margin.left - margin.right,
             height = 380 - margin.top - margin.bottom;
 
-        var showMore_width = 80;
-        var showMore_height = 20;
-        var heading_height = 20;
-
         var bar_padding = 0.35;
         var buffer = 20;
 
-        var heading = d3
-            .select("#bar_chart")
-            .append("svg")
-            .attrs({
-
-                "id": "heading_svg",
-                "height": heading_height,
-                "width": width + margin.left + margin.right + showMore_width,
-                "transform": `translate(${0}, ${0})`
-
-            });
-
-        heading
-            .append("text").attrs({
-
-                "text-anchor": "middle",
-                "dominant-baseline": "middle",
-                "x": "50%",
-                "y": "50%"
-
-            })
-            .html(function() {
-
-                if (data_type == "emmigration") {
-
-                    var text = `<tspan class="graph_heading">These <tspan fill="${color}">${zipfs.length}</tspan> Bars are Showing Destinations\
-                     of <tspan fill="${color}"> 
-                    ${((calculateTotal(zipfs) / total_migration) * 100).toFixed(4)}% </tspan>
-                    Emmigrants from the year <tspan fill="${color}">${year}</tspan></tspan>`;
-
-                    return text
-
-                } else if (data_type == "immigration") {
-                    var text = `<tspan class="graph_heading">These <tspan fill="${color}">${zipfs.length}</tspan> Bars are Showing Origins\
-                     of <tspan fill="${color}"> 
-                    ${((calculateTotal(zipfs) / total_migration) * 100).toFixed(4)}% </tspan>
-                    Immigrants from the year <tspan fill="${color}">${year}</tspan></tspan>`
-
-                    return text
-                }
-            });
-
-        more = d3
-            .select("#bar_chart")
-            .append("svg").attrs({
-
-                "id": "show_more_svg",
-                "width": showMore_width,
-                "height": showMore_height,
-                "transform": `translate( ${-showMore_width}, ${height + margin.top + (showMore_height / 2)})`
-
-            });
-
-
-        more.append("text").attrs({
-
-                "class": "showExtra",
-                "x": "50%",
-                "y": "50%",
-
-            })
-            .html("Show More &#x25B8")
-            .attr("dominant-baseline", "middle")
-            .on("click", function() {
-                return drawBarChart(data_type, year, others, selected_country, total_migration, list_of_countries_to_plot_untouched, color);
-            });
-
+        showHeaing();
 
         // append the svg object to the body of the page
         var svg = d3
@@ -1486,29 +1441,27 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
                 "transform": "translate(" + margin.left + "," + margin.top + ")"
             });
 
+        // Add X axis
         var x = d3
             .scaleBand()
             .range([0, width])
             .domain(
-                zipfs.map(function(x) {
+                this_lot.map(function(x) {
                     return x[0];
                 })
             )
             .padding(bar_padding);
 
-        svg
-            .append("g")
+        svg.append("g")
             .attr("transform", "translate(0," + height + ")")
             .call(d3.axisBottom(x).tickSizeOuter(0))
             .selectAll("text")
-            .attr("transform", "translate(-10,0)rotate(-30)")
-            .style("text-anchor", "end")
-            .attr("class", "xyBarAxis");
+            .each(modifyText);
 
         // Add Y axis
         var y = d3
             .scaleLinear()
-            .domain([0, d3.max(zipfs.map((d) => d[1]))])
+            .domain([0, d3.max(this_lot.map((d) => d[1]))])
             .range([height, 0]).nice();
 
         svg.append("g")
@@ -1541,10 +1494,9 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
 
             });
 
-        svg
-            .append("g")
+        svg.append("g")
             .selectAll(".mybar")
-            .data(zipfs)
+            .data(this_lot)
             .enter()
             .append("rect")
             .attr("class", "mybar")
@@ -1610,6 +1562,130 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
                 return height - y(d[1]);
             })
             .delay(function(d, i) { return (i * 50) });
+
+        showMoreAndPreviousButtons();
+
+
+        function showHeaing() {
+
+            var heading_height = 20;
+            var heading = d3
+                .select("#bar_chart")
+                .append("svg")
+                .attrs({
+
+                    "id": "heading_svg",
+                    "height": heading_height,
+                    "width": d3.select("#bar_chart").node().getBoundingClientRect().width, // width + margin.left + margin.right + showMore_width,
+                    "transform": `translate(${0}, ${0})`
+
+                });
+
+            heading.append("text").attrs({
+
+                    "text-anchor": "middle",
+                    "dominant-baseline": "middle",
+                    "x": "50%",
+                    "y": "50%"
+
+                })
+                .html(function() {
+
+                    if (data_type == "emmigration") {
+
+                        var text = `<tspan class="graph_heading">These <tspan fill="${color}">${this_lot.length}</tspan> Bars are Showing Destinations\
+                     of <tspan fill="${color}"> 
+                    ${((calculateTotal(this_lot) / total_migration) * 100).toFixed(4)}% </tspan>
+                    Emmigrants from the year <tspan fill="${color}">${year}</tspan></tspan>`;
+
+                        return text
+
+                    } else if (data_type == "immigration") {
+                        var text = `<tspan class="graph_heading">These <tspan fill="${color}">${this_lot.length}</tspan> Bars are Showing Origins\
+                     of <tspan fill="${color}"> 
+                    ${((calculateTotal(this_lot) / total_migration) * 100).toFixed(4)}% </tspan>
+                    Immigrants from the year <tspan fill="${color}">${year}</tspan></tspan>`
+
+                        return text
+                    }
+                });
+        }
+
+        function showMoreAndPreviousButtons() {
+
+            var buttonPannelDimensions = {
+                "height": 20,
+                "width": 200,
+                "margin": 40,
+                "button_gap": 80,
+                "x": 230,
+                "y": 300
+            };
+
+            button_pannel = d3.select("#bar_svg").append("g").attrs({
+
+                "id": "show_more",
+                "width": buttonPannelDimensions.width,
+                "height": buttonPannelDimensions.height,
+                "transform": `translate( 
+                    ${buttonPannelDimensions.x - buttonPannelDimensions.margin / 2}, 
+                    ${buttonPannelDimensions.y + buttonPannelDimensions.margin}
+                    )`
+
+            });
+
+            button_pannel.append("text").attrs({
+                    "x": buttonPannelDimensions.width / 2 + buttonPannelDimensions.button_gap,
+                    "y": 0,
+                    "class": "showNextOrPrevious"
+                })
+                .html("Show More &#9654")
+                .attr("dominant-baseline", "middle")
+                .on("click", function() {
+                    return drawBarChart(data_type, year, next_lot, selected_country, total_migration, list_of_countries_to_plot_untouched, color);
+                });
+
+            button_pannel.append("text").attrs({
+                    "x": buttonPannelDimensions.width / 2 - buttonPannelDimensions.button_gap,
+                    "y": 0,
+                    "class": "showNextOrPrevious"
+                })
+                .html("&#9664 Show Previous")
+                .attr("dominant-baseline", "middle")
+                .on("click", function() {
+                    if (previous_lot !== null) {
+                        return drawBarChart(data_type, year, previous_lot, selected_country, total_migration, list_of_countries_to_plot_untouched, color);
+                    }
+                });
+
+        }
+
+        function modifyText() {
+
+            var cutLength = 10;
+            textSelection = d3.select(this);
+            textSelection.datum(textSelection.text());
+
+            textSelection.attr("transform", "translate(-10,0)rotate(-30)")
+                .style("text-anchor", "end")
+                .attrs({
+                    "class": "xyBarAxis",
+                    "id": function(d) { return `tick_${d.replace(new RegExp(" ", "g"), "_")}` }
+                });
+
+            textSelection.text(function(d) {
+                if (d.length <= cutLength) {
+                    return d;
+                } else { return d.slice(0, cutLength).concat('...'); }
+            })
+
+            textSelection.on("mouseover", function(d) {
+                this_selection_id = d3.select(this).attr("id");
+                d3.select(`#${this_selection_id}`).text(d);
+            });
+
+            textSelection.on("mouseout", modifyText);
+        }
     }
 
 
