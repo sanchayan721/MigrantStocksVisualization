@@ -1294,8 +1294,6 @@ function barChartContent(selected_data, year_selected, selected_country, migrant
         top_origin_countries_percentage = (sum / total_migration) * 100;
         most_migrant_moved_percentage = (zipfs.length / sorted_origin.length) * 100;
 
-        console.log(sorted_origin)
-
         color = highlightCountries(sorted_origin, migrant_gender);
 
         drawBarChart( // Draw the respective bar chart
