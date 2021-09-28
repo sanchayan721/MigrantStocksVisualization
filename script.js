@@ -1540,9 +1540,18 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
         return migrant_total;
     }
 
-    if (this_lot.length < number_of_countries_to_visualize - 1 && list_of_countries_to_plot_untouched.length - 1 >= number_of_countries_to_visualize) {
+    if (list_of_countries_to_plot_untouched.length - 1 >= number_of_countries_to_visualize &&
+        this_lot.length < number_of_countries_to_visualize - 1) {
 
-        drawBarChart(data_type, year, list_of_countries_to_plot_untouched, selected_country, total_migration, list_of_countries_to_plot_untouched, color);
+        drawBarChart(
+            data_type,
+            year,
+            list_of_countries_to_plot_untouched,
+            selected_country,
+            total_migration,
+            list_of_countries_to_plot_untouched,
+            color
+        );
 
     } else {
 
@@ -1706,7 +1715,7 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
 
                     "id": "heading_svg",
                     "height": heading_height,
-                    "width": d3.select("#bar_chart").node().getBoundingClientRect().width, // width + margin.left + margin.right + showMore_width,
+                    "width": d3.select("#bar_chart").node().getBoundingClientRect().width,
                     "transform": `translate(${0}, ${0})`
 
                 });
@@ -1763,7 +1772,7 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
                 "transform": `translate( 
                     ${buttonPannelDimensions.x - buttonPannelDimensions.margin / 2}, 
                     ${buttonPannelDimensions.y + buttonPannelDimensions.margin}
-                    )`
+                )`
 
             });
 
@@ -1775,7 +1784,15 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
                 .html("Show More &#9654")
                 .attr("dominant-baseline", "middle")
                 .on("click", function() {
-                    return drawBarChart(data_type, year, next_lot, selected_country, total_migration, list_of_countries_to_plot_untouched, color);
+                    return drawBarChart(
+                        data_type,
+                        year,
+                        next_lot,
+                        selected_country,
+                        total_migration,
+                        list_of_countries_to_plot_untouched,
+                        color
+                    );
                 });
 
             button_pannel.append("text").attrs({
