@@ -50,7 +50,7 @@ function showButton(state, clickBehaviour) {
                 return "minimize_header_minimized"
             }
         })
-        .attr("height", button_parameters.height).attr("width", button_parameters.width) // 
+        .attr("height", button_parameters.height).attr("width", button_parameters.width) // The height and width attributes for the button are added
         .on("mouseover", function() {
             if (state == 'minimize') {
                 d3.select("#button_circle")
@@ -70,7 +70,7 @@ function showButton(state, clickBehaviour) {
                     .style("fill", "green");
             }
         })
-        .on("mouseout", function() {
+        .on("mouseout", function() { // This function in the attribute determines the behaviour or the button on mouse out
             if (state == 'minimize') {
                 d3.select("#button_text").selectAll("text")
                     .transition()
@@ -84,9 +84,9 @@ function showButton(state, clickBehaviour) {
                     .style("fill", "white");
             }
         })
-        .on("click", clickBehaviour);
+        .on("click", clickBehaviour); // On click the clickBehaviour will be loaded.
 
-    minimize_button.append("g")
+    minimize_button.append("g") // Groups the svg elements together
         .attr("id", "button_circle")
         .append("circle")
         .attrs({
@@ -102,10 +102,10 @@ function showButton(state, clickBehaviour) {
             }
         });
 
-    minimize_button.append("g")
+    minimize_button.append("g") // Group the svg elements for the minimize button
         .attrs({
             "id": "button_text",
-            "dominant-baseline": "middle",
+            "dominant-baseline": "middle", // The attributes id is button text and its set in the middle
         })
         .attr("transform", function() {
             if (state == 'minimize') {
@@ -121,14 +121,19 @@ function showButton(state, clickBehaviour) {
 
 function drawHeadingArea(header, authors) {
 
+    /* 
+     * This function draws the heading area with the respective information 
+     */
+
     title = header.append("div").attr("id", "title");
     title.append("text").text("Data Visualization Final Project - Migrant Stocks Visualization");
 
+    // The group member information is appended
     author = header.append("div").attr("class", "double_grid").attr("id", "authors");
     sanchayan = author.append("div").attr("id", "sanchayan");
     moses = author.append("div").attr("id", "moses");
 
-
+    // The group members are put in a list
     [sanchayan, moses].forEach(function(auth, index) {
         auth.append("text").html(`<strong>Name:</strong> <em>${authors[index].name}</em>\ 
     (${authors[index].matricola}) <br> <strong>E-mail:</strong> ${authors[index].e_mail}`);
@@ -137,23 +142,34 @@ function drawHeadingArea(header, authors) {
 
 function drawBodyArea() {
 
+    /* 
+        This function is used to draw the body for the data section of the application 
+        The body area will contain the map, ring chart and respective bar charts. 
+    */
+
     graphs = d3.select("body").append("div").attr("id", "graphs");
 
+    // This is the top row for the graphs
     top_row = graphs.append("div").attrs({
         "id": "top_row",
         "class": "double_grid"
     });
+
+    // This is the bottom row for the graphs
     bottom_row = graphs.append("div").attrs({
         "id": "bottom_row",
         "class": "double_grid"
     });
 
+    // On the top row append the map and the stacked bar chart
     top_row.append("div").attr("id", "map_view");
     top_row.append("div").attr("id", "stacked_bar_chart");
 
+    // On the bottom row append the bar_chart and the ring chart
     bottom_row.append("div").attr("id", "bar_chart");
     bottom_row.append("div").attr("id", "ring_chart");
 
+    // For every selection get the the data, country, year gender and interval 
     var selection = [{
         "data_selected": null,
         "country_selected": null,
@@ -162,11 +178,20 @@ function drawBodyArea() {
         "intervals": []
     }];
 
+    // Call the loadData function
     loadData(selection);
 }
 
 function loadData(selection) {
 
+    /* 
+    
+    This function loads the data for the application, the data is found in different csvs, so they have all been put
+    in a queue. 
+
+    */
+
+    // This is the queue for the csv data files
     d3.queue()
         .defer(d3.csv, "data/migrantion_data/origin_destination/UN_MigrantStockByOriginAndDestination.csv")
         .defer(d3.csv, "data/migrantion_data/origin_destination/UN_MigrantStockByOriginAndDestination_Male.csv")
@@ -196,6 +221,8 @@ function loadData(selection) {
 
                 }
             }
+
+            // Load map data 
             mapContent(data_files, selection);
         }
     });
@@ -204,11 +231,17 @@ function loadData(selection) {
 
 function mapContent(dataObject, selection) {
 
+    /*
+        This function loads the map with the respective dimensions and projection 
+    */
+
+    // Dimenstions
     var width = 850;
     var height = 320;
     var map_scale = 125;
     var map_offset = { "height": -30, "width": 20 }
 
+    // Tool tip
     var tip = d3
         .tip()
         .attr("class", "d3-tip")
@@ -245,6 +278,7 @@ function mapContent(dataObject, selection) {
             return `<span class="tip_text">${text}<span>`
         });
 
+    // Select the map_view element from the canvas and attact respective svgs. 
     var svg = d3
         .select("#map_view")
         .append("svg")
@@ -275,6 +309,7 @@ function mapContent(dataObject, selection) {
         }
     };
 
+    // Group the svg elements
     svg.append("g")
         .attr("id", "world_map")
         .selectAll("path")
@@ -296,6 +331,10 @@ function mapContent(dataObject, selection) {
 
 function dataSelectionLagend(selection, dataObject) {
 
+    /*
+        This function selects the data for either Emigration of Immigration. 
+    */
+
 
     selection.slice().reverse().every(function(element) {
 
@@ -305,14 +344,17 @@ function dataSelectionLagend(selection, dataObject) {
         else return true
     });
 
+    // Create buttons for the selection
     button_radius = 6;
     line_length = 5;
     group_spacing = 15;
 
+    // These are the possible data types either Immigration of emigration
     types_of_data = ["immigration", "emmigration"];
 
     world_map = d3.select("#map");
 
+    // Create a legend for the data on the map.
     dataLagend = world_map.append("g").attrs({
         "id": "data_selection_lagend",
         "transform": `translate(${world_map.node().getBBox().width - 50}, ${7.5})`,
@@ -324,16 +366,16 @@ function dataSelectionLagend(selection, dataObject) {
 
             "id": function(d) { return d },
             "fill": function(d, i) {
-                if (d == "immigration") {
+                if (d == "emmigration") {
                     return "#cf5f65"
-                } else if (d == "emmigration") {
+                } else if (d == "immigration") {
                     return "#8080FC"
                 }
             },
             "stroke": function(d, i) {
-                if (d == "immigration") {
+                if (d == "emmigration") {
                     return "#cf5f65"
-                } else if (d == "emmigration") {
+                } else if (d == "immigration") {
                     return "#8080FC"
                 }
             },
@@ -392,6 +434,7 @@ function dataSelectionLagend(selection, dataObject) {
         }
     });
 
+    // The selection happens in this place.
     function makeSelection(data_to_select) {
 
         d3.select("#data_selection_lagend").selectAll("#selection_circle").remove();
@@ -414,24 +457,30 @@ function dataSelectionLagend(selection, dataObject) {
 
 function stackedBarContent(selection, data) {
 
+    /* 
+         This function gets the stacked bar content to be used for the stacked bar. 
+    */
     var selected_data_type = selection[selection.length - 1].data_selected;
     var selected_country_on_map = selection[selection.length - 1].country_selected;
     var migrant = data.migration;
 
     var years = new Set();
 
+    // This will select all the migrants both male or female. 
     migrant.all.forEach(function(row) {
         if (Number(row["Year"]) != 0) {
             years.add(Number(row["Year"]));
         }
     });
 
+    // This will select only male migrants 
     migrant.male.forEach(function(row) {
         if (Number(row["Year"]) != 0) {
             years.add(Number(row["Year"]));
         }
     });
 
+    // This will select female migrants.
     migrant.female.forEach(function(row) {
         if (Number(row["Year"]) != 0) {
             years.add(Number(row["Year"]));
@@ -440,7 +489,8 @@ function stackedBarContent(selection, data) {
 
     male_female_migration_list = [];
 
-    if (selected_data_type == "emmigration") {
+    // If use selects emigration then the world map will show only data for emmigration
+    if (selected_data_type == "immigration") {
         years.forEach(function(year) {
             var male_number = null;
             var female_number = null;
@@ -472,7 +522,8 @@ function stackedBarContent(selection, data) {
             male_female_migration_list.push({ "year": year, "male": male_number, "female": female_number });
         });
 
-    } else if (selected_data_type == "immigration") {
+        // If the use select immigration data then the map will show only that selection. 
+    } else if (selected_data_type == "emmigration") {
         years.forEach(function(year) {
             var male_number = null;
             var female_number = null;
@@ -493,11 +544,16 @@ function stackedBarContent(selection, data) {
         });
     }
 
+    // With the repective data selection call the stackedBar function using the parameters shown. 
     showStackedBar(selection, male_female_migration_list, data);
 }
 
 function showStackedBar(selection, stackedBarData, all_data_files) {
 
+    /*
+       This function shows the stacked bar with the respective data. 
+
+    */
     d3.select("#no_data").remove()
     d3.selectAll(".connector_string").remove();
     d3.selectAll(".d3-tip-stacked-bar").remove();
@@ -512,6 +568,8 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
         else return true
     });
 
+
+    // Make the selection on the canvas. 
     d3.select("#stacked_bar_chart").selectAll("svg").remove();
 
     var margin = { top: 10, right: 80, bottom: 60, left: 80 },
@@ -522,6 +580,7 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
 
     var stacked_bar_chart = d3.select("#stacked_bar_chart");
 
+    // Append the heading to the bar chart. 
     var heading = stacked_bar_chart.append("svg").attrs({
 
         "id": "stacked_bar_title",
@@ -539,28 +598,31 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
         "y": "50%"
 
     }).html(function() {
-            if (selection[selection.length - 1].data_selected == "immigration") {
-                return `Yearly <tspan style="fill: #cf5f65">Immigration</tspan> Data of <tspan class="selectedCountryName">${selected_country}</tspan>`
-            } else if (selection[selection.length - 1].data_selected == "emmigration") {
-                return `Yearly <tspan style="fill: #8080FC">Emmigration</tspan> Data of <tspan class="selectedCountryName">${selected_country}</tspan>`
+            if (selection[selection.length - 1].data_selected == "emmigration") {
+                return `<tspan style="fill: #cf5f65">Emmigration</tspan> Data of <tspan class="selectedCountryName">${selected_country}</tspan>`
+            } else if (selection[selection.length - 1].data_selected == "immigration") {
+                return `<tspan style="fill: #8080FC">Immigration</tspan> Data of <tspan class="selectedCountryName">${selected_country}</tspan>`
             }
         }
 
     );
 
+    // Append svg elements
     graph = stacked_bar_chart.append("svg").attrs({
 
-        "id": "stacked_bar_svg",
-        "width": width + margin.left + margin.right,
-        "height": height + margin.top + margin.bottom
+            "id": "stacked_bar_svg",
+            "width": width + margin.left + margin.right,
+            "height": height + margin.top + margin.bottom
 
-    }).append("g").attrs({
+        })
+        // Group the svg elements
+        .append("g").attrs({
 
-        "id": "stacked_bar_graph",
-        "transform": `translate(${margin.left}, ${margin.top})`,
-        "style": "cursor: pointer"
+            "id": "stacked_bar_graph",
+            "transform": `translate(${margin.left}, ${margin.top})`,
+            "style": "cursor: pointer"
 
-    });
+        });
 
     var bar_padding = 0.6;
 
@@ -576,6 +638,7 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
 
     selection = selectGenderOnLagend(graph, subgroups, colourScale, stackedBarData, selection, all_data_files);
 
+    // Make tool tip
     var stacked_bar_tip = d3
         .tip()
         .attr("class", "d3-tip-stacked-bar")
@@ -609,7 +672,7 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
             return `<tspan class="tip_text">${text}</tspan>`;
         });
 
-    var x = d3.scaleBand()
+    var x = d3.scaleBand() // Scales the chart since the data is categorical.
         .domain(groups)
         .range([0, width])
         .padding(bar_padding);
@@ -665,7 +728,7 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
                 "width": x.bandwidth()
 
             })
-            .on("click", function(d) {
+            .on("click", function(d) { // Behaviour on click
 
                 d3.selectAll(".stackedBarSelected").attr("class", null);
                 d3.selectAll(`#year${d.data.year}`).attr("class", "stackedBarSelected");
@@ -673,11 +736,11 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
                 selectedMigrationBarAndAgeDoughnut(selection, all_data_files, colourScale);
 
             })
-            .on("mouseover", function(d) {
+            .on("mouseover", function(d) { // Behaviour on mouseover
                 stacked_bar_tip.show(d);
                 d3.selectAll(`#year${d.data.year}`).attr("opacity", "100%").transition().duration(200).attr("opacity", "60%");
             })
-            .on("mouseout", function(d) {
+            .on("mouseout", function(d) { // Behaviour on mouseout
                 stacked_bar_tip.hide(d);
                 d3.selectAll(`#year${d.data.year}`).attr("opacity", "100%").transition().duration(200).attr("opacity", "100%");
             })
@@ -714,7 +777,11 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
 
     function drawBarForOneGender(gender) {
 
-        y = d3.scaleLinear()
+        /* 
+            Based on the selected gender draw the bars based on that selection 
+        */
+
+        y = d3.scaleLinear() // Use the linear scale in this case.
             .domain([0, d3.max(stackedBarData, function(d) {
                 return d[gender];
             })]).nice()
@@ -740,17 +807,17 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
                 "height": function(d) { return height - y(0); },
                 "width": x.bandwidth()
 
-            }).on("click", function(d) {
+            }).on("click", function(d) { // Mouse behaviour on click
 
                 d3.selectAll(".stackedBarSelected").attr("class", null);
                 d3.select(this).attr("class", "stackedBarSelected");
                 selection[selection.length - 1].year_selected = d.year;
                 selectedMigrationBarAndAgeDoughnut(selection, all_data_files, colourScale)
 
-            }).on("mouseover", function(d) {
+            }).on("mouseover", function(d) { // Mouse behavior on mouse over
                 stacked_bar_tip.show(d, selection);
             })
-            .on("mouseout", function(d) {
+            .on("mouseout", function(d) { // Mouse behaviour on mouse out
                 stacked_bar_tip.hide();
             })
             .transition().duration(200).attrs({
@@ -807,6 +874,14 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
 
     function playPauseButton(state) {
 
+        /*
+
+            This function plays through the respective years and displays the data on the barch chart for a a particluar
+            country. 
+
+        */
+
+        // Player respective variables.
         var frame_lag = 1800;
         var year_index = 0;
         var loop = 0;
@@ -816,12 +891,14 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
             state = ["play"];
         }
 
+        // Remove all elements for the button element
         d3.select("#play_pause_button").remove();
 
         svg = d3.select("#stacked_bar_svg");
 
         var buttonStyles = { "x": 300, "y": 280, "radius": 15 };
 
+        // Group svg elements
         button = svg.append("g").attrs({
             "id": "play_pause_button",
             "transform": `translate(${buttonStyles.x}, ${buttonStyles.y})`,
@@ -838,6 +915,7 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
 
         button.data(state);
 
+        // The button is circular
         button.append("circle").attrs({
             "cx": 0,
             "cy": 0,
@@ -856,7 +934,7 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
             })
             .html(function(d) { if (d == "play") { return "&#x25B6" } else if (d == "pause") { return "&#10074&#10074" } });
 
-
+        // Pause button behavior on click
         d3.select(".pause_button").on("click", function() {
             selection[selection.length - 1].intervals.forEach(interval => {
                 clearInterval(interval);
@@ -864,6 +942,7 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
             playPauseButton(["play"]);
         });
 
+        // Play button behavior
         d3.select(".play_button").on("click", function() {
             playPauseButton(["pause"]);
             selected_bar = d3.selectAll(".stackedBarSelected");
@@ -873,6 +952,7 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
                 year_index = groups.indexOf(selected_year) + 1;
             }
 
+            // the epoch function in terms of intervals
             interval = setInterval(function() {
                 if (d3.select(".pause_button")._groups[0][0] !== null && year_index < groups.length) {
                     d3.selectAll(".stackedBarSelected").attr("class", null);
@@ -885,6 +965,7 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
                         year_index = 0;
                         loop++;
 
+                        // Exactly loops desired number of times if the play button is kept presses
                     } else if (loop == loops) {
                         selection[selection.length - 1].intervals.forEach((interval) => clearInterval(interval));
                         playPauseButton(["play"])
@@ -900,6 +981,9 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
 
 function selectGenderOnLagend(stacked_bar_chart, subgroups, colourscale, stackedBarData, selection, all_data_files) {
 
+    /* 
+        This function shows the data based on gender on the bar charts for every particular country. 
+    */
     button_radius = 6;
     line_length = 5;
     group_spacing = 15;
@@ -1000,6 +1084,10 @@ function selectGenderOnLagend(stacked_bar_chart, subgroups, colourscale, stacked
 
 function selectedMigrationBarAndAgeDoughnut(selection, data_file, colourScale) {
 
+    /*
+        This function selects the migration data and the repective color scale for the bar and dougnut
+    */
+
     selected_data_type = selection[selection.length - 1].data_selected;
     selected_country = selection[selection.length - 1].country_selected;
     selected_year = selection[selection.length - 1].year_selected;
@@ -1022,17 +1110,19 @@ function selectedMigrationBarAndAgeDoughnut(selection, data_file, colourScale) {
         else return true
     });
 
+    // If bar_chart id is null then do the following 
     if (document.getElementById("bar_chart") == null) {
         d3.select("#no_data").remove();
         d3.select("#bottom_row").append("div").attr("id", "bar_chart");
         d3.select("#bar_chart").append("div").attr("id", "doughnut_zipfs");
     }
 
+    // If parameters are not null then call the barChartContent() function
     if (selected_year !== null && selected_country !== null && selected_gender !== null) {
 
         barChartContent(selected_data_type, selected_year, selected_country, selected_gender, data_file);
 
-        if (selected_data_type == "immigration") {
+        if (selected_data_type == "emmigration") {
             doughnutChartContent(selected_year, selected_country, selected_gender, data_file, colourScale);
         } else {
             d3.select("#age_doughnut_svg").selectAll("g").remove();
@@ -1044,7 +1134,7 @@ function selectedMigrationBarAndAgeDoughnut(selection, data_file, colourScale) {
 
         barChartContent(selected_data_type, selected_year, selected_country, default_gender_selection, data_file);
 
-        if (selected_data_type == "immigration") {
+        if (selected_data_type == "emmigration") {
             doughnutChartContent(selected_year, selected_country, default_gender_selection, data_file, colourScale);
         } else {
             d3.select("#age_doughnut_svg").selectAll("g").remove();
@@ -1055,10 +1145,17 @@ function selectedMigrationBarAndAgeDoughnut(selection, data_file, colourScale) {
 
 function barChartContent(selected_data, year_selected, selected_country, migrant_gender, data_fileObject) {
 
+    /*
+     
+        This function will operate on the immigration dataset and emigration and draws the barcharts plus the doghnut chart that is found 
+        within the bar chart for immigration. 
+
+    */
+
     var dict_destination = [];
     var dict_origin = [];
 
-    if (selected_data == "immigration") {
+    if (selected_data == "emmigration") { // If selected data is emmigration then
 
         data_fileObject.migration[migrant_gender].forEach(function(row) {
             if (Number(row.Year == year_selected)) {
@@ -1114,6 +1211,7 @@ function barChartContent(selected_data, year_selected, selected_country, migrant
 
         color = highlightCountries(sorted_destination, migrant_gender);
 
+        // Draws the barchart 
         drawBarChart(
             selected_data,
             year_selected,
@@ -1124,6 +1222,7 @@ function barChartContent(selected_data, year_selected, selected_country, migrant
             color
         );
 
+        // Draws the doughnut chart
         drawRingChart(
             selected_data,
             top_destination_countries_percentage,
@@ -1132,7 +1231,7 @@ function barChartContent(selected_data, year_selected, selected_country, migrant
             color
         );
 
-    } else if (selected_data == "emmigration") {
+    } else if (selected_data == "immigration") { // If selected data is immigration then
 
         data_fileObject.migration[migrant_gender].forEach(function(row) {
             if (Number(row.Year) == year_selected && row.Destination == selected_country) {
@@ -1195,9 +1294,11 @@ function barChartContent(selected_data, year_selected, selected_country, migrant
         top_origin_countries_percentage = (sum / total_migration) * 100;
         most_migrant_moved_percentage = (zipfs.length / sorted_origin.length) * 100;
 
+        console.log(sorted_origin)
+
         color = highlightCountries(sorted_origin, migrant_gender);
 
-        drawBarChart(
+        drawBarChart( // Draw the respective bar chart
             selected_data,
             year_selected,
             sorted_origin,
@@ -1207,7 +1308,7 @@ function barChartContent(selected_data, year_selected, selected_country, migrant
             color
         );
 
-        drawRingChart(
+        drawRingChart( // And dougnut chart
             selected_data,
             top_origin_countries_percentage,
             most_migrant_moved_percentage,
@@ -1221,16 +1322,24 @@ function barChartContent(selected_data, year_selected, selected_country, migrant
 }
 
 function highlightCountries(to_be_highlighted, gender) {
+
+    /*
+        
+        Based on the selection for the legend (by clicking), highligh the data on the map based on legend selection.
+
+    */
     d3.selectAll(".destination, .lagend_selected_country").attr("class", "countries");
 
     domain_equivalence = [1, 10, 100, 1000, 10000, 100000, 1000000, 10000000];
 
+    // The color schemes that will be used.
     colorscemes = {
         "male": d3.schemeBlues,
         "female": d3.schemePurples,
         "all": d3.schemeGreens
     }
 
+    // The color scale
     colourScale = d3
         .scaleLog()
         .domain(domain_equivalence)
@@ -1238,6 +1347,7 @@ function highlightCountries(to_be_highlighted, gender) {
 
     graph_accent_color = colourScale(100000);
 
+    // Calls the color legend
     colorLagend(colourScale, domain_equivalence, to_be_highlighted);
 
     to_be_highlighted.slice(1).forEach(function(row) {
@@ -1262,6 +1372,12 @@ function highlightCountries(to_be_highlighted, gender) {
 
 function colorLagend(colourscale, domain, list_to_highlight) {
 
+    /*
+    
+        This function colors the legend and determines the behavior of the legend on click or mouse over and out
+
+    */
+
     d3.select("#map").select("#lagend").remove();
 
     var lagend_height = 160;
@@ -1272,6 +1388,7 @@ function colorLagend(colourscale, domain, list_to_highlight) {
     domain.unshift(0);
 
 
+    // On mouseover show data on map
     let mouseOver = function() {
         d3.selectAll(".lagend_selected_country").attr("class", "destination");
         ofm_on_scale_hover = Math.log10(this.__data__);
@@ -1290,6 +1407,7 @@ function colorLagend(colourscale, domain, list_to_highlight) {
         }
     }
 
+    // Onclick on the legend show the related data on the map. 
     let onClick = function(d) {
 
         if (d == 0) {
@@ -1310,6 +1428,12 @@ function colorLagend(colourscale, domain, list_to_highlight) {
 
 
     function showBarSelectedDataOnMap(ofm_on_scale) {
+
+        /*
+    
+            This function show the related selected data on the map based on the legend
+    
+        */
 
         list_to_highlight.slice(1).forEach(function(row) {
 
@@ -1380,6 +1504,10 @@ function colorLagend(colourscale, domain, list_to_highlight) {
 
 function drawBarChart(data_type, year, list_of_countries_to_plot, selected_country, total_migration, list_of_countries_to_plot_untouched, color) {
 
+    /*
+       This function draws the bar chart and also defines all the behaviors of that barchart based on the clicked country on the map
+
+    */
 
     d3.select("#bar_chart").selectAll("#heading_svg, #show_more_svg, #bar_svg").remove();
     d3.selectAll("#bar_tip").remove();
@@ -1403,6 +1531,8 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
     }
 
     function calculateTotal(array) {
+
+        // This function calculates the total based on the list it takes
         var migrant_total = 0;
         array.forEach(function(row) {
             migrant_total += row[1];
@@ -1410,7 +1540,7 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
         return migrant_total;
     }
 
-    if (this_lot.length < number_of_countries_to_visualize - 1) {
+    if (this_lot.length < number_of_countries_to_visualize - 1 && list_of_countries_to_plot_untouched.length - 1 >= number_of_countries_to_visualize) {
 
         drawBarChart(data_type, year, list_of_countries_to_plot_untouched, selected_country, total_migration, list_of_countries_to_plot_untouched, color);
 
@@ -1476,14 +1606,14 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
             .offset([-10, 0])
             .html(function(d) {
 
-                if (data_type == "emmigration") {
+                if (data_type == "immigration") {
 
                     var html = `<p style = "text-align:center;" class="tip_text">${selected_country[0]}  &#x2708  ${d[0]}<br>
                         <span style='color: ${color}; font-size: 0.9em'> ${d[1]} (${((d[1] / total_migration) * 100).toFixed(2)}%)</span></span></p>`;
 
                     return html;
 
-                } else if (data_type == "immigration") {
+                } else if (data_type == "emmigration") {
 
                     var html = `<p style = "text-align:center;" class="tip_text">${d[0]}  &#x2708  ${selected_country[0]}<br>
                         <span style='color: ${color}; font-size: 0.9em'> ${d[1]} (${((d[1] / total_migration) * 100).toFixed(2)}%)</span></span></p>`;
@@ -1595,7 +1725,7 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
                     var text = `<tspan class="graph_heading">These <tspan fill="${color}">${this_lot.length}</tspan> Bars are Showing Destinations\
                      of <tspan fill="${color}"> 
                     ${((calculateTotal(this_lot) / total_migration) * 100).toFixed(4)}% </tspan>
-                    Emmigrants from the year <tspan fill="${color}">${year}</tspan></tspan>`;
+                    Emmigrants up till <tspan fill="${color}">${year}</tspan></tspan>`;
 
                     return text
 
@@ -1603,7 +1733,7 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
                     var text = `<tspan class="graph_heading">These <tspan fill="${color}">${this_lot.length}</tspan> Bars are Showing Origins\
                      of <tspan fill="${color}"> 
                     ${((calculateTotal(this_lot) / total_migration) * 100).toFixed(4)}% </tspan>
-                    Immigrants from the year <tspan fill="${color}">${year}</tspan></tspan>`
+                    Immigrants up till <tspan fill="${color}">${year}</tspan></tspan>`
 
                     return text
                 }
@@ -1611,6 +1741,10 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
         }
 
         function showMoreAndPreviousButtons() {
+
+            /* 
+                This button shows the more and previous countries based on the what is showed on the bar axis 
+            */
 
             var buttonPannelDimensions = {
                 "height": 20,
@@ -1661,6 +1795,10 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
 
         function modifyText() {
 
+            /* 
+                This function modifys the text based on what is shown on the x-axis 
+            */
+
             var cutLength = 10;
             textSelection = d3.select(this);
             textSelection.datum(textSelection.text());
@@ -1691,8 +1829,13 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
 }
 
 function drawArrow(source, target, data_type, color) {
+
+    /*
+        This function draws the arrow based on the country clicked on the bar. 
+    */
+
     var svg = d3.select("#map");
-    svg.selectAll(".connector_string").remove();
+    svg.selectAll(".connector_string").remove(); // Clear canvas
 
     var projection = d3.select("#world_map").datum().projection
 
@@ -1706,6 +1849,7 @@ function drawArrow(source, target, data_type, color) {
         y: projection([target[2], target[3]])[1]
     };
 
+    // Arrow-Head Definition
     svg.append("svg:defs").append("svg:marker")
         .attr("id", "arrow")
         .attr("class", "connector_string_arrowHead")
@@ -1736,6 +1880,7 @@ function drawArrow(source, target, data_type, color) {
 
     });
 
+    // Append cirlce to the group
     g.append("circle").attrs({
 
             "cx": destination_coordinates.x,
@@ -1759,6 +1904,7 @@ function drawArrow(source, target, data_type, color) {
         }).transition().delay(1000)
         .attr("r", 0);
 
+    // Append path 
     g.append("path")
         .attr("id", "path_shadow")
         .attr("stroke", "black")
@@ -1777,7 +1923,7 @@ function drawArrow(source, target, data_type, color) {
                 " 0 0,1 " + destination_coordinates.x + "," + destination_coordinates.y;
         }).delay(function(d, i) { return (800 + i * 100) });
 
-
+    // Append path 
     g.append("path")
         .attr("stroke", "black")
         .attr("d", function() {
@@ -1798,6 +1944,10 @@ function drawArrow(source, target, data_type, color) {
 }
 
 function drawRingChart(data_selected, emmigrantVal, countryVal, total_val, accent_color) {
+    /*
+        Draw a doughnut chart based on selected data for the emmmigration data as recieved by the individual coutries
+    */
+
     d3.select("#doughnut_zipfs").remove();
 
     var width = 200;
@@ -1915,6 +2065,10 @@ function drawRingChart(data_selected, emmigrantVal, countryVal, total_val, accen
 
 function doughnutChartContent(year, country, gender, data_file, colourScale) {
 
+    /* 
+        Data split for the doughnut chart  and percentage calculations 
+    */
+
     age_bracket_map = {
         "0-4": "0-14",
         "5-9": "0-14",
@@ -1957,6 +2111,11 @@ function doughnutChartContent(year, country, gender, data_file, colourScale) {
 
 function drawAgeDoughnutChart(age_data, gender, colourScale) {
 
+    /*
+       
+       This function draws the doughnut chart based on the age , gender and color scale
+    */
+
     d3.select("#age_doughnut_svg").remove();
     var ring_chart = d3.select("#ring_chart");
 
@@ -1968,6 +2127,7 @@ function drawAgeDoughnutChart(age_data, gender, colourScale) {
 
     };
 
+    // Select the doughnut chart from the canvas.
     var ageDoughnutSVG = d3.select("#ring_chart")
         .append("svg")
         .attrs({
@@ -1976,7 +2136,7 @@ function drawAgeDoughnutChart(age_data, gender, colourScale) {
             "width": svgDimension.width - svgDimension.margin
         });
 
-
+    // Group all svg elements together
     var heading = ageDoughnutSVG.append("g").attrs({
         "id": "age_doughnut_heading",
         "transform": `translate(${svgDimension.width / 2}, ${svgDimension.margin})`
@@ -2028,7 +2188,11 @@ function drawAgeDoughnutChart(age_data, gender, colourScale) {
 
 function innerDoughnutHtml(arcGroup, data) {
 
-    d3.select("#inner_doughnut_html").remove();
+    /*
+        Shows the percentage values in the inner doughnut 
+    */
+
+    d3.select("#inner_doughnut_html").remove(); // Clear canvas
 
     arcGroup.append("text").attrs({
         "id": "inner_doughnut_html",
@@ -2040,7 +2204,11 @@ function innerDoughnutHtml(arcGroup, data) {
 
 function drawAgeLagend(arcGroup, svg, svgDimensions, data, colourScale) {
 
-    lagendElementDimensions = {
+    /* 
+        This functions shows the legend values for the age doughnut.
+    */
+
+    lagendElementDimensions = { // Legend dimensions.
         "right_padding": 100,
         "top_padding": 100,
         "circle_radius": 10,
@@ -2048,6 +2216,7 @@ function drawAgeLagend(arcGroup, svg, svgDimensions, data, colourScale) {
         "line_length": 7.5
     }
 
+    // Group svg elements
     gender_lagend = svg.append("g").attrs({
         "id": "gender_lagend",
         "transform": `translate(${svgDimensions.width - svgDimensions.margin - lagendElementDimensions.top_padding}, 
@@ -2120,6 +2289,11 @@ function drawAgeLagend(arcGroup, svg, svgDimensions, data, colourScale) {
 }
 
 function noDataAvailable(country) {
+
+    /* 
+        This function is called when we do not have any data about a country.
+    */
+
     d3.select("#map").selectAll("path").attr("class", "countries");
     d3.select("#stacked_bar_chart").selectAll("svg").remove();
     d3.select(".connector_string").remove();
@@ -2131,7 +2305,7 @@ function noDataAvailable(country) {
         .append("text")
         .html(
             `<pre><strong>Sorry!!</strong>  No Data Available for <strong>${country}</strong></pre>`
-        );
+        ); // Show message that no data is available.
 }
 
 window.onload = function() {
