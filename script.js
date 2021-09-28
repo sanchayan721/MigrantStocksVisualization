@@ -350,7 +350,7 @@ function dataSelectionLagend(selection, dataObject) {
     group_spacing = 15;
 
     // These are the possible data types either Immigration of emigration
-    types_of_data = ["immigration", "emmigration"];
+    types_of_data = ["immigration", "emigration"];
 
     world_map = d3.select("#map");
 
@@ -366,14 +366,14 @@ function dataSelectionLagend(selection, dataObject) {
 
             "id": function(d) { return d },
             "fill": function(d, i) {
-                if (d == "emmigration") {
+                if (d == "emigration") {
                     return "#cf5f65"
                 } else if (d == "immigration") {
                     return "#8080FC"
                 }
             },
             "stroke": function(d, i) {
-                if (d == "emmigration") {
+                if (d == "emigration") {
                     return "#cf5f65"
                 } else if (d == "immigration") {
                     return "#8080FC"
@@ -489,7 +489,7 @@ function stackedBarContent(selection, data) {
 
     male_female_migration_list = [];
 
-    // If use selects emigration then the world map will show only data for emmigration
+    // If use selects emigration then the world map will show only data for emigration
     if (selected_data_type == "immigration") {
         years.forEach(function(year) {
             var male_number = null;
@@ -523,7 +523,7 @@ function stackedBarContent(selection, data) {
         });
 
         // If the use select immigration data then the map will show only that selection. 
-    } else if (selected_data_type == "emmigration") {
+    } else if (selected_data_type == "emigration") {
         years.forEach(function(year) {
             var male_number = null;
             var female_number = null;
@@ -598,8 +598,8 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
         "y": "50%"
 
     }).html(function() {
-            if (selection[selection.length - 1].data_selected == "emmigration") {
-                return `<tspan style="fill: #cf5f65">Emmigration</tspan> Data of <tspan class="selectedCountryName">${selected_country}</tspan>`
+            if (selection[selection.length - 1].data_selected == "emigration") {
+                return `<tspan style="fill: #cf5f65">Emigration</tspan> Data of <tspan class="selectedCountryName">${selected_country}</tspan>`
             } else if (selection[selection.length - 1].data_selected == "immigration") {
                 return `<tspan style="fill: #8080FC">Immigration</tspan> Data of <tspan class="selectedCountryName">${selected_country}</tspan>`
             }
@@ -1122,7 +1122,7 @@ function selectedMigrationBarAndAgeDoughnut(selection, data_file, colourScale) {
 
         barChartContent(selected_data_type, selected_year, selected_country, selected_gender, data_file);
 
-        if (selected_data_type == "emmigration") {
+        if (selected_data_type == "immigration") {
             doughnutChartContent(selected_year, selected_country, selected_gender, data_file, colourScale);
         } else {
             d3.select("#age_doughnut_svg").selectAll("g").remove();
@@ -1134,7 +1134,7 @@ function selectedMigrationBarAndAgeDoughnut(selection, data_file, colourScale) {
 
         barChartContent(selected_data_type, selected_year, selected_country, default_gender_selection, data_file);
 
-        if (selected_data_type == "emmigration") {
+        if (selected_data_type == "immigration") {
             doughnutChartContent(selected_year, selected_country, default_gender_selection, data_file, colourScale);
         } else {
             d3.select("#age_doughnut_svg").selectAll("g").remove();
@@ -1155,7 +1155,7 @@ function barChartContent(selected_data, year_selected, selected_country, migrant
     var dict_destination = [];
     var dict_origin = [];
 
-    if (selected_data == "emmigration") { // If selected data is emmigration then
+    if (selected_data == "emigration") { // If selected data is emigration then
 
         data_fileObject.migration[migrant_gender].forEach(function(row) {
             if (Number(row.Year == year_selected)) {
@@ -1615,14 +1615,14 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
 
                 if (data_type == "immigration") {
 
-                    var html = `<p style = "text-align:center;" class="tip_text">${selected_country[0]}  &#x2708  ${d[0]}<br>
+                    var html = `<p style = "text-align:center;" class="tip_text">${d[0]}  &#x2708  ${selected_country[0]}<br>
                         <span style='color: ${color}; font-size: 0.9em'> ${d[1]} (${((d[1] / total_migration) * 100).toFixed(2)}%)</span></span></p>`;
 
                     return html;
 
-                } else if (data_type == "emmigration") {
+                } else if (data_type == "emigration") {
 
-                    var html = `<p style = "text-align:center;" class="tip_text">${d[0]}  &#x2708  ${selected_country[0]}<br>
+                    var html = `<p style = "text-align:center;" class="tip_text">${selected_country[0]}  &#x2708  ${d[0]}<br>
                         <span style='color: ${color}; font-size: 0.9em'> ${d[1]} (${((d[1] / total_migration) * 100).toFixed(2)}%)</span></span></p>`;
 
                     return html;
@@ -1661,7 +1661,7 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
                 source = [];
                 target = [];
 
-                if (data_type == "emmigration") {
+                if (data_type == "emigration") {
 
                     source = selected_country;
                     target = destination.filter(function(d, i) { return i != 1 });
@@ -1727,7 +1727,7 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
 
             }).html(function() {
 
-                if (data_type == "emmigration") {
+                if (data_type == "emigration") {
 
                     var text = `<tspan class="graph_heading">These <tspan fill="${color}">${this_lot.length}</tspan> Bars are Showing Destinations\
                      of <tspan fill="${color}"> 
@@ -1886,7 +1886,7 @@ function drawArrow(source, target, data_type, color) {
         "stroke-width": "0.4px",
         "r": 6,
         "fill": function() {
-            if (data_type == "emmigration") {
+            if (data_type == "emigration") {
                 return color;
             } else if (data_type == "immigration") {
                 return "#FBC02D";
@@ -1907,7 +1907,7 @@ function drawArrow(source, target, data_type, color) {
             "stroke": "white",
             "fill": function() {
 
-                if (data_type == "emmigration") {
+                if (data_type == "emigration") {
                     return "#FBC02D";
 
                 } else if (data_type == "immigration") {
@@ -2065,7 +2065,7 @@ function drawRingChart(data_selected, emmigrantVal, countryVal, total_val, accen
 
         })
         .html(function() {
-            if (data_selected == "emmigration") {
+            if (data_selected == "emigration") {
 
                 return `<tspan class="small_graph_heading">Top <tspan id="highlight_text" style="fill: ${accent_color}">\
                 ${countryVal.toFixed(2)}% </tspan> Destination Countries</tspan>`
