@@ -678,7 +678,7 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
         .padding(bar_padding);
 
     graph.append("g")
-        .attr("transform", "translate(0," + height + ")")
+        .attr("transform", `translate(${0}, ${height})`)
         .call(d3.axisBottom(x).tickSizeOuter(0))
         .selectAll("text")
         .attr("class", "xyStackedBarAxis").call(stacked_bar_tip);
