@@ -126,8 +126,8 @@ body {
 }
 
 #footer{
-    position: absolute;
-    top: 100%;
+    position: fixed;
+    bottom: 0;
     width: 100%;
     height: fit-content;
     z-index: 99;

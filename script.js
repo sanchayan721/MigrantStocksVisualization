@@ -132,12 +132,7 @@ function drawHeadingFooterArea(body) {
     title = header.append("div").attr("id", "title");
     title.append("text").text("Migrant Stocks Data Visualization");
 
-    footer = body.append("div").attrs({
-        "id": "footer",
-        "style": function () {
-            console.log(d3.select("#bar_svg").empty())
-        }
-    });
+    footer = body.append("div").attr("id", "footer");
     author_place = footer.append("div").attr("id", "author");
     author_place.append("text").html(`<tspan id="author_name">${author.name} (${author.matricola})</tspan>\ 
     <br> <tspan id="author_email"><strong>@:</strong> ${author.e_mail}</tspan>`);
@@ -1330,6 +1325,11 @@ function highlightCountries(to_be_highlighted, gender) {
 
     */
     d3.selectAll(".destination, .lagend_selected_country").attr("class", "countries");
+    d3.select("#footer").attrs({
+        "position": "absolute",
+        "bottom": null,
+        "top": "100%"
+    })
 
     domain_equivalence = [1, 10, 100, 1000, 10000, 100000, 1000000, 10000000];
 
