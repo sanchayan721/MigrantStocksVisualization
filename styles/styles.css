@@ -108,6 +108,7 @@ body {
 
 #header_footer {
     width: 100%;
+    left: 0;
     height: fit-content;
     background-color: #1D9913;
     -webkit-box-shadow: 0 2px 8px .1px #6b6b6b;
