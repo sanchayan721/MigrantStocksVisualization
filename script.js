@@ -2,20 +2,23 @@ function drawHeadingAreaWithButton() {
 
     // I select the body of the HTML and append the heading area where the author information will stay
     body = d3.select("body");
+    header = body.append("div").attr("id", "header");
+    footer = body.append("div").attr("id", "footer");
 
-    drawHeadingFooterArea(body); // I draw the Heading area with this method
+    drawHeadingFooterArea(header, footer); // I draw the Heading area with this method
 
     // Onclick method of the Button present in the heading area
     buttonOnClick = function () {
 
         if (document.getElementById('title') == null) {
 
-            drawHeadingFooterArea(body);
+            drawHeadingFooterArea(header, footer);
             showButton('minimize', buttonOnClick);
 
         } else {
 
-            d3.select("#header_footer").selectAll("#title, #author").remove();
+            d3.select("#header").selectAll("#title").remove();
+            d3.select("#footer").selectAll("#author").remove();
             showButton('maximize', buttonOnClick);
         }
     };
@@ -120,7 +123,7 @@ function showButton(state, clickBehaviour) {
         .style("fill", "#9ca19c");
 }
 
-function drawHeadingFooterArea(body) {
+function drawHeadingFooterArea(header, footer) {
 
     /* 
      * This function draws the heading area with the respective information 
@@ -128,11 +131,9 @@ function drawHeadingFooterArea(body) {
 
     author = { name: "Sanchayan Bhunia", matricola: 4849650, e_mail: "s4849650@studenti.unige.it" };
 
-    header = body.append("div").attr("id", "header");
     title = header.append("div").attr("id", "title");
     title.append("text").text("Migrant Stocks Data Visualization");
 
-    footer = body.append("div").attr("id", "footer");
     author_place = footer.append("div").attr("id", "author");
     author_place.append("text").html(`<tspan id="author_name">${author.name} (${author.matricola})</tspan>\ 
     <br> <tspan id="author_email"><strong>@:</strong> ${author.e_mail}</tspan>`);
