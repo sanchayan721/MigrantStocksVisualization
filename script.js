@@ -1325,7 +1325,7 @@ function highlightCountries(to_be_highlighted, gender) {
 
     */
     d3.selectAll(".destination, .lagend_selected_country").attr("class", "countries");
-    d3.select("#footer").attrs({
+    d3.select("#footer").styles({
         "position": "absolute",
         "bottom": null,
         "top": "100%"
