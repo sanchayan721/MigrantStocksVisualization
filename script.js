@@ -2,16 +2,15 @@ function drawHeadingAreaWithButton() {
 
     // I select the body of the HTML and append the heading area where the author information will stay
     body = d3.select("body");
-    heading = body.append("div").attr("id", "header_footer");
 
-    drawHeadingFooterArea(heading); // I draw the Heading area with this method
+    drawHeadingFooterArea(body); // I draw the Heading area with this method
 
     // Onclick method of the Button present in the heading area
     buttonOnClick = function () {
 
         if (document.getElementById('title') == null) {
 
-            drawHeadingFooterArea(heading);
+            drawHeadingFooterArea(body);
             showButton('minimize', buttonOnClick);
 
         } else {
@@ -37,7 +36,7 @@ function showButton(state, clickBehaviour) {
     // I define the dimension of the button
     var button_parameters = { height: "40", width: "40", padding: "5", stroke_width: "2" }
 
-    minimize_button = d3.select("#header_footer").append("svg") // I select the header and append an svg for the button
+    minimize_button = d3.select("#header").append("svg") // I select the header and append an svg for the button
         .attr("id", "minimize_header") // Name of the button
         .attrs({
 
@@ -121,7 +120,7 @@ function showButton(state, clickBehaviour) {
         .style("fill", "#9ca19c");
 }
 
-function drawHeadingFooterArea(header) {
+function drawHeadingFooterArea(body) {
 
     /* 
      * This function draws the heading area with the respective information 
@@ -129,11 +128,18 @@ function drawHeadingFooterArea(header) {
 
     author = { name: "Sanchayan Bhunia", matricola: 4849650, e_mail: "s4849650@studenti.unige.it" };
 
+    header = body.append("div").attr("id", "header");
     title = header.append("div").attr("id", "title");
     title.append("text").text("Migrant Stocks Data Visualization");
 
-    footer = header.append("div").attr("id", "author");
-    footer.append("text").html(`<tspan id="author_name">${author.name} (${author.matricola})</tspan>\ 
+    footer = body.append("div").attrs({
+        "id": "footer",
+        "style": function () {
+            console.log(d3.select("#bar_svg").empty())
+        }
+    });
+    author_place = footer.append("div").attr("id", "author");
+    author_place.append("text").html(`<tspan id="author_name">${author.name} (${author.matricola})</tspan>\ 
     <br> <tspan id="author_email"><strong>@:</strong> ${author.e_mail}</tspan>`);
 }
 

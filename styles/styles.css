@@ -106,7 +106,7 @@ body {
 
 /* Heading Styles */
 
-#header_footer {
+#header {
     width: 100%;
     height: fit-content;
     background-color: #1D9913;
@@ -125,16 +125,20 @@ body {
     color: white;
 }
 
-#author {
-    position: fixed;
-    left: 0;
-    bottom: 0;
+#footer{
+    position: absolute;
+    top: 100%;
     width: 100%;
-    color: #1D9913;
-    background-color: #ececec;
-    text-align: center;
+    height: fit-content;
+    z-index: 99;
+}
+
+#author {
     padding-top: 0.5%;
     padding-bottom: 0.5%;
+    text-align: center;
+    color: #1D9913;
+    background-color: #ececec;
  }
 
  #author_name{
