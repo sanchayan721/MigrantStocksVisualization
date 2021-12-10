@@ -23,7 +23,10 @@
     font-weight: 200;
 }
 
-
+@-ms-viewport{
+    width: device-width;
+  }
+  
 /* Format of Preset */
 
 pre {
@@ -45,7 +48,7 @@ pre {
 /* Body and Scroll Bar and Misclenious Others*/
 
 html {
-    width: fit-content;
+    width:  auto;
 }
 
 body {
@@ -122,24 +125,31 @@ body {
     color: white;
 }
 
-#authors {
-    padding-top: 0.5%;
-    padding-bottom: 0.5%;
-    padding-left: 1%;
-    padding-right: 1%;
+#footer{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
     height: fit-content;
-    background-color: white;
+    z-index: 99;
 }
 
-#sanchayan,
-#moses {
+#author {
     padding-top: 0.5%;
     padding-bottom: 0.5%;
-    padding-left: 2%;
-    padding-right: 2%;
+    text-align: center;
     color: #1D9913;
-    font-size: 0.8em;
-}
+    background-color: #ececec;
+ }
+
+ #author_name{
+    font-size: 0.9em;
+    font-weight: 500;
+ }
+
+ #author_email{
+    font-size: 0.7em;
+    font-weight: 300;
+ }
 
 
 /* Heading Minimize Button Styles */

@@ -1,26 +1,24 @@
 function drawHeadingAreaWithButton() {
-    // This is the section where I make the author object with names and Matricola
-    author_dict = [{ name: "Sanchayan Bhunia", matricola: 4849650, e_mail: "s4849650@studenti.unige.it" },
-        { name: "Moses Mbabaali", matricola: 4846019, e_mail: "s4846019@studenti.unige.it" }
-    ];
 
     // I select the body of the HTML and append the heading area where the author information will stay
     body = d3.select("body");
-    heading = body.append("div").attr("id", "header");
+    header = body.append("div").attr("id", "header");
+    footer = body.append("div").attr("id", "footer");
 
-    drawHeadingArea(heading, author_dict); // I draw the Heading area with this method
+    drawHeadingFooterArea(header, footer); // I draw the Heading area with this method
 
     // Onclick method of the Button present in the heading area
-    buttonOnClick = function() {
+    buttonOnClick = function () {
 
         if (document.getElementById('title') == null) {
 
-            drawHeadingArea(heading, author_dict);
+            drawHeadingFooterArea(header, footer);
             showButton('minimize', buttonOnClick);
 
         } else {
 
-            d3.select("#header").selectAll("#title, #authors").remove();
+            d3.select("#header").selectAll("#title").remove();
+            d3.select("#footer").selectAll("#author").remove();
             showButton('maximize', buttonOnClick);
         }
     };
@@ -43,15 +41,21 @@ function showButton(state, clickBehaviour) {
 
     minimize_button = d3.select("#header").append("svg") // I select the header and append an svg for the button
         .attr("id", "minimize_header") // Name of the button
-        .attr("class", function() { // I will define the possible states of the button either minimized or maximized
-            if (state == 'minimize') {
-                return "minimize_header_maximized"
-            } else if (state == 'maximize') {
-                return "minimize_header_minimized"
-            }
+        .attrs({
+
+            "class": function () { // I will define the possible states of the button either minimized or maximized
+                if (state == 'minimize') {
+                    return "minimize_header_maximized"
+                } else if (state == 'maximize') {
+                    return "minimize_header_minimized"
+                }
+            },
+
+            "height": button_parameters.height,
+            "width": button_parameters.width
+
         })
-        .attr("height", button_parameters.height).attr("width", button_parameters.width) // The height and width attributes for the button are added
-        .on("mouseover", function() {
+        .on("mouseover", function () {
             if (state == 'minimize') {
                 d3.select("#button_circle")
                     .attr("fill", "white");
@@ -70,7 +74,7 @@ function showButton(state, clickBehaviour) {
                     .style("fill", "green");
             }
         })
-        .on("mouseout", function() { // This function in the attribute determines the behaviour or the button on mouse out
+        .on("mouseout", function () { // This function in the attribute determines the behaviour or the button on mouse out
             if (state == 'minimize') {
                 d3.select("#button_text").selectAll("text")
                     .transition()
@@ -94,7 +98,7 @@ function showButton(state, clickBehaviour) {
             "cy": button_parameters.width / 2,
             "r": button_parameters.height / 2 - button_parameters.padding,
         })
-        .attr("fill", function() {
+        .attr("fill", function () {
             if (state == 'minimize') {
                 return "white";
             } else if (state == 'maximize') {
@@ -107,7 +111,7 @@ function showButton(state, clickBehaviour) {
             "id": "button_text",
             "dominant-baseline": "middle", // The attributes id is button text and its set in the middle
         })
-        .attr("transform", function() {
+        .attr("transform", function () {
             if (state == 'minimize') {
                 return `translate(${button_parameters.width / 2}, ${button_parameters.height / 2})`;
             } else if (state == 'maximize') {
@@ -119,25 +123,20 @@ function showButton(state, clickBehaviour) {
         .style("fill", "#9ca19c");
 }
 
-function drawHeadingArea(header, authors) {
+function drawHeadingFooterArea(header, footer) {
 
     /* 
      * This function draws the heading area with the respective information 
      */
 
+    author = { name: "Sanchayan Bhunia", matricola: 4849650, e_mail: "s4849650@studenti.unige.it" };
+
     title = header.append("div").attr("id", "title");
-    title.append("text").text("Data Visualization Final Project - Migrant Stocks Visualization");
+    title.append("text").text("Migrant Stocks Data Visualization");
 
-    // The group member information is appended
-    author = header.append("div").attr("class", "double_grid").attr("id", "authors");
-    sanchayan = author.append("div").attr("id", "sanchayan");
-    moses = author.append("div").attr("id", "moses");
-
-    // The group members are put in a list
-    [sanchayan, moses].forEach(function(auth, index) {
-        auth.append("text").html(`<strong>Name:</strong> <em>${authors[index].name}</em>\ 
-    (${authors[index].matricola}) <br> <strong>E-mail:</strong> ${authors[index].e_mail}`);
-    });
+    author_place = footer.append("div").attr("id", "author");
+    author_place.append("text").html(`<tspan id="author_name">${author.name} (${author.matricola})</tspan>\ 
+    <br> <tspan id="author_email"><strong>@:</strong> ${author.e_mail}</tspan>`);
 }
 
 function drawBodyArea() {
@@ -202,30 +201,30 @@ function loadData(selection) {
         .defer(d3.csv, "data/migrantion_data/age_data/Immigrants_Male.csv")
         .defer(d3.csv, "data/migrantion_data/age_data/Immigrants_Female.csv")
 
-    .await(function(error, file1, file2, file3, file4, file5, file6, file7, file8) {
-        if (error) {
-            console.error('Something went wrong: ' + error);
-        } else {
-            data_files = {
-                "migration": {
-                    "all": file1,
-                    "male": file2,
-                    "female": file3,
-                },
-                "iso": file4,
-                "geojson": file5,
-                "migrant_age": {
-                    "all": file6,
-                    "male": file7,
-                    "female": file8,
+        .await(function (error, file1, file2, file3, file4, file5, file6, file7, file8) {
+            if (error) {
+                console.error('Something went wrong: ' + error);
+            } else {
+                data_files = {
+                    "migration": {
+                        "all": file1,
+                        "male": file2,
+                        "female": file3,
+                    },
+                    "iso": file4,
+                    "geojson": file5,
+                    "migrant_age": {
+                        "all": file6,
+                        "male": file7,
+                        "female": file8,
 
+                    }
                 }
-            }
 
-            // Load map data 
-            mapContent(data_files, selection);
-        }
-    });
+                // Load map data 
+                mapContent(data_files, selection);
+            }
+        });
 
 }
 
@@ -246,14 +245,14 @@ function mapContent(dataObject, selection) {
         .tip()
         .attr("class", "d3-tip")
         .attr("id", "map-tip")
-        .direction(function() {
+        .direction(function () {
             if (this.getBBox().y <= 26) {
                 return 's';
             } else {
                 return 'n';
             }
         })
-        .offset(function() {
+        .offset(function () {
             if (this.id === "USA") {
                 return [50, 50];
             } else if (this.id === "RUS") {
@@ -264,7 +263,7 @@ function mapContent(dataObject, selection) {
                 return [-5, 0];
             }
         })
-        .html(function() {
+        .html(function () {
             if (this.className.baseVal == "countries" || this.className.baseVal == "selectedCountry") {
                 text = `${this.__data__.properties.name}`;
             } else if (this.className.baseVal == "destination") {
@@ -298,7 +297,7 @@ function mapContent(dataObject, selection) {
     // A path generator
     var path = d3.geoPath().projection(projection);
 
-    let mouseClick = function(data) {
+    let mouseClick = function (data) {
         d3.selectAll(".selectedCountry, .destination").attr("class", "countries");
         d3.select(this).attr("class", "selectedCountry");
 
@@ -318,11 +317,11 @@ function mapContent(dataObject, selection) {
         .append("path")
         .attrs({
             "class": "countries",
-            "id": function(d) { return d.id },
+            "id": function (d) { return d.id },
             "d": path
         })
-        .on("mouseover", tip.show)
-        .on("mouseout", tip.hide)
+        .on("mouseover.tip", tip.show)
+        .on("mouseout.tip", tip.hide)
         .on("click", mouseClick);
 
     d3.select("#world_map").datum({ "projection": projection });
@@ -336,7 +335,7 @@ function dataSelectionLagend(selection, dataObject) {
     */
 
 
-    selection.slice().reverse().every(function(element) {
+    selection.slice().reverse().every(function (element) {
 
         previous_data_selection = element.data_selected;
 
@@ -364,22 +363,22 @@ function dataSelectionLagend(selection, dataObject) {
     oneGroup = dataLagend.selectAll("g")
         .data(types_of_data).enter().append("g").attrs({
 
-            "id": function(d) { return d },
-            "fill": function(d, i) {
+            "id": function (d) { return d },
+            "fill": function (d, i) {
                 if (d == "emigration") {
                     return "#cf5f65"
                 } else if (d == "immigration") {
                     return "#8080FC"
                 }
             },
-            "stroke": function(d, i) {
+            "stroke": function (d, i) {
                 if (d == "emigration") {
                     return "#cf5f65"
                 } else if (d == "immigration") {
                     return "#8080FC"
                 }
             },
-            "transform": function(d, i) {
+            "transform": function (d, i) {
                 if (i % 2 == 0) {
                     return `translate(${-2 * button_radius}, ${0})`
                 } else {
@@ -402,9 +401,9 @@ function dataSelectionLagend(selection, dataObject) {
 
     oneGroup.append("line").attrs({
 
-        "x1": function(d, i) { if (i % 2 == 0) { return -button_radius } else { return button_radius } },
+        "x1": function (d, i) { if (i % 2 == 0) { return -button_radius } else { return button_radius } },
         "y1": 0,
-        "x2": function(d, i) { if (i % 2 == 0) { return -(button_radius + line_length) } else { return button_radius + line_length } },
+        "x2": function (d, i) { if (i % 2 == 0) { return -(button_radius + line_length) } else { return button_radius + line_length } },
         "y2": 0,
         "stroke-width": 1.5
 
@@ -413,19 +412,19 @@ function dataSelectionLagend(selection, dataObject) {
     oneGroup.append("text").attrs({
 
         "dominant-baseline": "middle",
-        "style": function(d, i) { if (i % 2 == 0) { return "text-anchor: end" } else { return "text-anchor: start" } },
+        "style": function (d, i) { if (i % 2 == 0) { return "text-anchor: end" } else { return "text-anchor: start" } },
         "class": "dataLagendText",
-        "x": function(d, i) { if (i % 2 == 0) { return -(button_radius + line_length + 5) } else { return button_radius + line_length + 5 } },
+        "x": function (d, i) { if (i % 2 == 0) { return -(button_radius + line_length + 5) } else { return button_radius + line_length + 5 } },
         "y": 0,
         "stroke": "none"
 
-    }).text(function(d) { return d.charAt(0).toUpperCase() + d.slice(1) });
+    }).text(function (d) { return d.charAt(0).toUpperCase() + d.slice(1) });
 
-    oneGroup.on("mouseover", function() { d3.select(this).attr("opacity", "50%") });
+    oneGroup.on("mouseover", function () { d3.select(this).attr("opacity", "50%") });
 
-    oneGroup.on("mouseout", function() { d3.select(this).attr("opacity", "100%") });
+    oneGroup.on("mouseout", function () { d3.select(this).attr("opacity", "100%") });
 
-    oneGroup.on("click", function(data, i) {
+    oneGroup.on("click", function (data, i) {
         selection[selection.length - 1].data_selected = data;
         makeSelection(data);
 
@@ -444,7 +443,7 @@ function dataSelectionLagend(selection, dataObject) {
             "cx": 0,
             "r": button_radius - 2.5
 
-        }).attr("cy", function() {
+        }).attr("cy", function () {
 
             button_dimensions = d3.select(`#${data_to_select}`).select("circle").node().getBBox();
             return button_dimensions.y + button_dimensions.height / 2;
@@ -467,21 +466,21 @@ function stackedBarContent(selection, data) {
     var years = new Set();
 
     // This will select all the migrants both male or female. 
-    migrant.all.forEach(function(row) {
+    migrant.all.forEach(function (row) {
         if (Number(row["Year"]) != 0) {
             years.add(Number(row["Year"]));
         }
     });
 
     // This will select only male migrants 
-    migrant.male.forEach(function(row) {
+    migrant.male.forEach(function (row) {
         if (Number(row["Year"]) != 0) {
             years.add(Number(row["Year"]));
         }
     });
 
     // This will select female migrants.
-    migrant.female.forEach(function(row) {
+    migrant.female.forEach(function (row) {
         if (Number(row["Year"]) != 0) {
             years.add(Number(row["Year"]));
         }
@@ -491,11 +490,11 @@ function stackedBarContent(selection, data) {
 
     // If use selects emigration then the world map will show only data for emigration
     if (selected_data_type == "immigration") {
-        years.forEach(function(year) {
+        years.forEach(function (year) {
             var male_number = null;
             var female_number = null;
 
-            migrant.male.forEach(function(d) {
+            migrant.male.forEach(function (d) {
                 if (Number(d.Year) == year) {
                     for (const [key, value] of Object.entries(d)) {
                         if (key == selected_country_on_map) {
@@ -507,7 +506,7 @@ function stackedBarContent(selection, data) {
                 }
             });
 
-            migrant.female.forEach(function(d) {
+            migrant.female.forEach(function (d) {
                 if (Number(d.Year) == year) {
                     for (const [key, value] of Object.entries(d)) {
                         if (key == selected_country_on_map) {
@@ -524,17 +523,17 @@ function stackedBarContent(selection, data) {
 
         // If the use select immigration data then the map will show only that selection. 
     } else if (selected_data_type == "emigration") {
-        years.forEach(function(year) {
+        years.forEach(function (year) {
             var male_number = null;
             var female_number = null;
 
-            migrant.male.forEach(function(d) {
+            migrant.male.forEach(function (d) {
                 if (Number(d.Year) == year && d.Destination == selected_country_on_map) {
                     male_number = Number(d.Total);
                 }
             });
 
-            migrant.female.forEach(function(d) {
+            migrant.female.forEach(function (d) {
                 if (Number(d.Year) == year && d.Destination == selected_country_on_map) {
                     female_number = Number(d.Total);
                 }
@@ -560,7 +559,7 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
 
     selected_country = selection[selection.length - 1].country_selected;
 
-    selection.slice().reverse().every(function(element) {
+    selection.slice().reverse().every(function (element) {
 
         previous_year_selection = element.year_selected;
 
@@ -597,24 +596,24 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
         "x": "50%",
         "y": "50%"
 
-    }).html(function() {
-            if (selection[selection.length - 1].data_selected == "emigration") {
-                return `<tspan style="fill: #cf5f65">Emigration</tspan> Data of <tspan class="selectedCountryName">${selected_country}</tspan>`
-            } else if (selection[selection.length - 1].data_selected == "immigration") {
-                return `<tspan style="fill: #8080FC">Immigration</tspan> Data of <tspan class="selectedCountryName">${selected_country}</tspan>`
-            }
+    }).html(function () {
+        if (selection[selection.length - 1].data_selected == "emigration") {
+            return `<tspan style="fill: #cf5f65">Emigration</tspan> Data of <tspan class="selectedCountryName">${selected_country}</tspan>`
+        } else if (selection[selection.length - 1].data_selected == "immigration") {
+            return `<tspan style="fill: #8080FC">Immigration</tspan> Data of <tspan class="selectedCountryName">${selected_country}</tspan>`
         }
+    }
 
     );
 
     // Append svg elements
     graph = stacked_bar_chart.append("svg").attrs({
 
-            "id": "stacked_bar_svg",
-            "width": width + margin.left + margin.right,
-            "height": height + margin.top + margin.bottom
+        "id": "stacked_bar_svg",
+        "width": width + margin.left + margin.right,
+        "height": height + margin.top + margin.bottom
 
-        })
+    })
         // Group the svg elements
         .append("g").attrs({
 
@@ -626,7 +625,7 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
 
     var bar_padding = 0.6;
 
-    var groups = stackedBarData.map(function(d) {
+    var groups = stackedBarData.map(function (d) {
         return d.year;
     });
 
@@ -644,7 +643,7 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
         .attr("class", "d3-tip-stacked-bar")
         .attr("id", "stacked_bar_tip")
         .offset([-10, 0])
-        .html(function(d) {
+        .html(function (d) {
 
             var gender_selected = selection[selection.length - 1].gender_selected;
 
@@ -694,7 +693,7 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
     } else {
 
         var y = d3.scaleLinear()
-            .domain([0, d3.max(stackedBarData, function(d) {
+            .domain([0, d3.max(stackedBarData, function (d) {
                 return d.male + d.female;
             })]).nice()
             .range([height, 0])
@@ -715,20 +714,20 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
             .selectAll("g")
             .data(stackedData)
             .enter().append("g")
-            .attr("fill", function(d) { return colourScale(d.key); })
+            .attr("fill", function (d) { return colourScale(d.key); })
             .selectAll("rect")
-            .data(function(d) { return d; })
+            .data(function (d) { return d; })
             .enter().append("rect")
             .attrs({
 
-                "id": function(d) { return `year${d.data.year}` },
-                "x": function(d) { return x(d.data.year); },
-                "y": function(d) { return y(0); },
-                "height": function(d) { return y(d[0]) - y(d[0]); },
+                "id": function (d) { return `year${d.data.year}` },
+                "x": function (d) { return x(d.data.year); },
+                "y": function (d) { return y(0); },
+                "height": function (d) { return y(d[0]) - y(d[0]); },
                 "width": x.bandwidth()
 
             })
-            .on("click", function(d) { // Behaviour on click
+            .on("click", function (d) { // Behaviour on click
 
                 d3.selectAll(".stackedBarSelected").attr("class", null);
                 d3.selectAll(`#year${d.data.year}`).attr("class", "stackedBarSelected");
@@ -736,33 +735,33 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
                 selectedMigrationBarAndAgeDoughnut(selection, all_data_files, colourScale);
 
             })
-            .on("mouseover", function(d) { // Behaviour on mouseover
+            .on("mouseover", function (d) { // Behaviour on mouseover
                 stacked_bar_tip.show(d);
                 d3.selectAll(`#year${d.data.year}`).attr("opacity", "100%").transition().duration(200).attr("opacity", "60%");
             })
-            .on("mouseout", function(d) { // Behaviour on mouseout
+            .on("mouseout", function (d) { // Behaviour on mouseout
                 stacked_bar_tip.hide(d);
                 d3.selectAll(`#year${d.data.year}`).attr("opacity", "100%").transition().duration(200).attr("opacity", "100%");
             })
             .transition().duration(200)
             .attrs({
 
-                "id": function(d) { return `year${d.data.year}` },
-                "x": function(d) { return x(d.data.year); },
-                "y": function(d) { return y(d[1]); },
-                "height": function(d) { return y(d[0]) - y(d[1]); },
+                "id": function (d) { return `year${d.data.year}` },
+                "x": function (d) { return x(d.data.year); },
+                "y": function (d) { return y(d[1]); },
+                "height": function (d) { return y(d[0]) - y(d[1]); },
                 "width": x.bandwidth()
 
             })
-            .delay(function(d, i) { return (i * 50) });
+            .delay(function (d, i) { return (i * 50) });
 
     }
 
-    stacked_bar_chart.on("mouseover", function() {
+    stacked_bar_chart.on("mouseover", function () {
         d3.select("#dummy_bar_group").remove()
     });
 
-    stacked_bar_chart.on("mouseout", function() { drawDummies() });
+    stacked_bar_chart.on("mouseout", function () { drawDummies() });
 
     if (previous_year_selection !== null) {
         d3.selectAll(`#year${previous_year_selection}`).attr("class", "stackedBarSelected");
@@ -782,7 +781,7 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
         */
 
         y = d3.scaleLinear() // Use the linear scale in this case.
-            .domain([0, d3.max(stackedBarData, function(d) {
+            .domain([0, d3.max(stackedBarData, function (d) {
                 return d[gender];
             })]).nice()
             .range([height, 0])
@@ -799,44 +798,44 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
             .enter()
             .append("rect").attrs({
 
-                "id": function(d) { return `year${d.year}` },
+                "id": function (d) { return `year${d.year}` },
                 "class": "male_female_bar",
-                "x": function(d) { return x(d.year); },
-                "y": function(d) { return y(0); },
+                "x": function (d) { return x(d.year); },
+                "y": function (d) { return y(0); },
                 "fill": colourScale(gender),
-                "height": function(d) { return height - y(0); },
+                "height": function (d) { return height - y(0); },
                 "width": x.bandwidth()
 
-            }).on("click", function(d) { // Mouse behaviour on click
+            }).on("click", function (d) { // Mouse behaviour on click
 
                 d3.selectAll(".stackedBarSelected").attr("class", null);
                 d3.select(this).attr("class", "stackedBarSelected");
                 selection[selection.length - 1].year_selected = d.year;
                 selectedMigrationBarAndAgeDoughnut(selection, all_data_files, colourScale)
 
-            }).on("mouseover", function(d) { // Mouse behavior on mouse over
+            }).on("mouseover", function (d) { // Mouse behavior on mouse over
                 stacked_bar_tip.show(d, selection);
             })
-            .on("mouseout", function(d) { // Mouse behaviour on mouse out
+            .on("mouseout", function (d) { // Mouse behaviour on mouse out
                 stacked_bar_tip.hide();
             })
             .transition().duration(200).attrs({
 
-                "x": function(d) { return x(d.year); },
-                "y": function(d) { return y(d[gender]); },
+                "x": function (d) { return x(d.year); },
+                "y": function (d) { return y(d[gender]); },
                 "fill": colourScale(gender),
-                "height": function(d) { return height - y(d[gender]); },
+                "height": function (d) { return height - y(d[gender]); },
                 "width": x.bandwidth()
 
             })
-            .delay(function(d, i) { return (i * 50) });
+            .delay(function (d, i) { return (i * 50) });
     }
 
     function drawDummies() {
 
         if (selection[selection.length - 1].gender_selected == "all" || selection[selection.length - 1].gender_selected == null) {
             y = d3.scaleLinear()
-                .domain([0, d3.max(stackedBarData, function(d) {
+                .domain([0, d3.max(stackedBarData, function (d) {
                     return d.male + d.female;
                 })]).nice()
                 .range([height, 0])
@@ -851,18 +850,18 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
                 .append("rect")
                 .attrs({
 
-                    "id": function(d) {
+                    "id": function (d) {
                         return `year${d.year}`
                     },
-                    "x": function(d) { return x(d.year); },
-                    "y": function(d) { return y(0) },
+                    "x": function (d) { return x(d.year); },
+                    "y": function (d) { return y(0) },
                     "fill": "#41AB5D",
-                    "height": function(d) { return height - y(0); },
+                    "height": function (d) { return height - y(0); },
                     "width": x.bandwidth()
                 }).transition().duration(1000).attrs({
-                    "y": function(d) { return y(d.male + d.female) },
-                    "height": function(d) { return height - y(d.male + d.female); }
-                }).delay(function(d, i) { return 3000 + (i * 100) });
+                    "y": function (d) { return y(d.male + d.female) },
+                    "height": function (d) { return height - y(d.male + d.female); }
+                }).delay(function (d, i) { return 3000 + (i * 100) });
 
             stackedBarData.forEach((bar) => {
                 if (d3.select("#bar_area").selectAll(`#year${bar.year}`).attr('class') == "stackedBarSelected") {
@@ -905,7 +904,7 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
             "style": "cursor: pointer"
         });
 
-        button.attr("class", function() {
+        button.attr("class", function () {
             if (state[0] == "play") {
                 return "play_button"
             } else {
@@ -920,22 +919,22 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
             "cx": 0,
             "cy": 0,
             "r": buttonStyles.radius,
-            "fill": function(d) { if (d == "play") { return "green" } else if (d == "pause") { return "#C70D39" } }
+            "fill": function (d) { if (d == "play") { return "green" } else if (d == "pause") { return "#C70D39" } }
         });
 
         button.append("text")
             .attrs({
-                "x": function(d) { if (d == "play") { return 1 } else if (d == "pause") { return 0 } },
+                "x": function (d) { if (d == "play") { return 1 } else if (d == "pause") { return 0 } },
                 "y": 1,
                 "text-anchor": "middle",
                 "dominant-baseline": "middle",
                 "style": "user-select: none",
                 "fill": "#F1F1F1"
             })
-            .html(function(d) { if (d == "play") { return "&#x25B6" } else if (d == "pause") { return "&#10074&#10074" } });
+            .html(function (d) { if (d == "play") { return "&#x25B6" } else if (d == "pause") { return "&#10074&#10074" } });
 
         // Pause button behavior on click
-        d3.select(".pause_button").on("click", function() {
+        d3.select(".pause_button").on("click", function () {
             selection[selection.length - 1].intervals.forEach(interval => {
                 clearInterval(interval);
             });
@@ -943,7 +942,7 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
         });
 
         // Play button behavior
-        d3.select(".play_button").on("click", function() {
+        d3.select(".play_button").on("click", function () {
             playPauseButton(["pause"]);
             selected_bar = d3.selectAll(".stackedBarSelected");
 
@@ -953,7 +952,7 @@ function showStackedBar(selection, stackedBarData, all_data_files) {
             }
 
             // the epoch function in terms of intervals
-            interval = setInterval(function() {
+            interval = setInterval(function () {
                 if (d3.select(".pause_button")._groups[0][0] !== null && year_index < groups.length) {
                     d3.selectAll(".stackedBarSelected").attr("class", null);
                     d3.selectAll(`#year${groups[year_index]}`).attr("class", "stackedBarSelected");
@@ -989,7 +988,7 @@ function selectGenderOnLagend(stacked_bar_chart, subgroups, colourscale, stacked
     group_spacing = 15;
 
 
-    selection.slice().reverse().every(function(element) {
+    selection.slice().reverse().every(function (element) {
 
         previous_gender_selection = element.gender_selected;
 
@@ -1011,16 +1010,16 @@ function selectGenderOnLagend(stacked_bar_chart, subgroups, colourscale, stacked
         .append("g")
         .attrs({
 
-            "fill": function(d) { return colourscale(d) },
-            "stroke": function(d) { return colourscale(d) },
-            "id": function(d) { return d }
+            "fill": function (d) { return colourscale(d) },
+            "stroke": function (d) { return colourscale(d) },
+            "id": function (d) { return d }
 
         });
 
     one_group.append("circle").attrs({
 
         "cx": 0,
-        "cy": function(d, i) { return i * (button_radius + group_spacing) },
+        "cy": function (d, i) { return i * (button_radius + group_spacing) },
         "r": button_radius,
         "stroke-width": 1.5,
         "fill-opacity": "0"
@@ -1030,9 +1029,9 @@ function selectGenderOnLagend(stacked_bar_chart, subgroups, colourscale, stacked
     one_group.append("line").attrs({
 
         "x1": button_radius,
-        "y1": function(d, i) { return i * (button_radius + group_spacing) },
+        "y1": function (d, i) { return i * (button_radius + group_spacing) },
         "x2": button_radius + line_length,
-        "y2": function(d, i) { return i * (button_radius + group_spacing) },
+        "y2": function (d, i) { return i * (button_radius + group_spacing) },
         "stroke-width": 1.5
 
     });
@@ -1042,10 +1041,10 @@ function selectGenderOnLagend(stacked_bar_chart, subgroups, colourscale, stacked
         "dominant-baseline": "middle",
         "class": "genderLagendText",
         "x": button_radius + line_length + 5,
-        "y": function(d, i) { return i * (button_radius + group_spacing) },
+        "y": function (d, i) { return i * (button_radius + group_spacing) },
         "stroke": "none"
 
-    }).text(function(d) { return d.charAt(0).toUpperCase() + d.slice(1) });
+    }).text(function (d) { return d.charAt(0).toUpperCase() + d.slice(1) });
 
     if (previous_gender_selection !== null) {
         makeSelection(previous_gender_selection);
@@ -1054,7 +1053,7 @@ function selectGenderOnLagend(stacked_bar_chart, subgroups, colourscale, stacked
         makeSelection("all");
     }
 
-    one_group.on("click", function(data, i) {
+    one_group.on("click", function (data, i) {
 
         selection[selection.length - 1].gender_selected = data;
 
@@ -1063,16 +1062,16 @@ function selectGenderOnLagend(stacked_bar_chart, subgroups, colourscale, stacked
 
     });
 
-    one_group.on("mouseover", function() { d3.select(this).attr("opacity", "50%") })
+    one_group.on("mouseover", function () { d3.select(this).attr("opacity", "50%") })
 
-    one_group.on("mouseout", function() { d3.select(this).attr("opacity", "100%") })
+    one_group.on("mouseout", function () { d3.select(this).attr("opacity", "100%") })
 
     function makeSelection(gender_to_select) {
         d3.select(`#${gender_to_select}`).append("circle").attrs({
             "id": "selection_circle",
             "cx": 0,
             "r": button_radius - 2.5
-        }).attr("cy", function() {
+        }).attr("cy", function () {
 
             button_dimensions = d3.select(`#${gender_to_select}`).select("circle").node().getBBox();
             return button_dimensions.y + button_dimensions.height / 2;
@@ -1093,7 +1092,7 @@ function selectedMigrationBarAndAgeDoughnut(selection, data_file, colourScale) {
     selected_year = selection[selection.length - 1].year_selected;
     selected_gender = selection[selection.length - 1].gender_selected;
 
-    selection.slice().reverse().every(function(element) {
+    selection.slice().reverse().every(function (element) {
 
         selected_year = element.year_selected;
         selected_gender = element.gender_selected;
@@ -1102,7 +1101,7 @@ function selectedMigrationBarAndAgeDoughnut(selection, data_file, colourScale) {
         else return true
     });
 
-    selection.slice().reverse().every(function(element) {
+    selection.slice().reverse().every(function (element) {
 
         selected_gender = element.gender_selected;
 
@@ -1157,11 +1156,11 @@ function barChartContent(selected_data, year_selected, selected_country, migrant
 
     if (selected_data == "emigration") { // If selected data is emigration then
 
-        data_fileObject.migration[migrant_gender].forEach(function(row) {
+        data_fileObject.migration[migrant_gender].forEach(function (row) {
             if (Number(row.Year == year_selected)) {
                 for (const [country, migrant_number] of Object.entries(row)) {
                     if (country == selected_country && !isNaN(Number(migrant_number))) {
-                        data_fileObject.iso.forEach(function(rw) {
+                        data_fileObject.iso.forEach(function (rw) {
                             if (row.Destination == rw.Country) {
                                 dict_destination.push([
                                     row.Destination,
@@ -1185,9 +1184,9 @@ function barChartContent(selected_data, year_selected, selected_country, migrant
 
         });
 
-        var sorted_destination = dict_destination.sort(function(a, b) {
-                return +a[1] - +b[1];
-            })
+        var sorted_destination = dict_destination.sort(function (a, b) {
+            return +a[1] - +b[1];
+        })
             .reverse();
 
 
@@ -1233,7 +1232,7 @@ function barChartContent(selected_data, year_selected, selected_country, migrant
 
     } else if (selected_data == "immigration") { // If selected data is immigration then
 
-        data_fileObject.migration[migrant_gender].forEach(function(row) {
+        data_fileObject.migration[migrant_gender].forEach(function (row) {
             if (Number(row.Year) == year_selected && row.Destination == selected_country) {
                 for (const [country, migrant_number] of Object.entries(row)) {
 
@@ -1243,7 +1242,7 @@ function barChartContent(selected_data, year_selected, selected_country, migrant
                             dict_origin.push(["WORLD", Number(migrant_number), , 0, 0]);
                         };
 
-                        data_fileObject.iso.forEach(function(rw) {
+                        data_fileObject.iso.forEach(function (rw) {
                             if (rw.Country == country) {
                                 dict_origin.push([
 
@@ -1270,9 +1269,9 @@ function barChartContent(selected_data, year_selected, selected_country, migrant
             };
         });
 
-        var sorted_origin = dict_origin.sort(function(a, b) {
-                return +a[1] - +b[1];
-            })
+        var sorted_origin = dict_origin.sort(function (a, b) {
+            return +a[1] - +b[1];
+        })
             .reverse();
 
 
@@ -1327,6 +1326,11 @@ function highlightCountries(to_be_highlighted, gender) {
 
     */
     d3.selectAll(".destination, .lagend_selected_country").attr("class", "countries");
+    d3.select("#footer").styles({
+        "position": "absolute",
+        "bottom": null,
+        "top": "100%"
+    })
 
     domain_equivalence = [1, 10, 100, 1000, 10000, 100000, 1000000, 10000000];
 
@@ -1348,18 +1352,18 @@ function highlightCountries(to_be_highlighted, gender) {
     // Calls the color legend
     colorLagend(colourScale, domain_equivalence, to_be_highlighted);
 
-    to_be_highlighted.slice(1).forEach(function(row) {
+    to_be_highlighted.slice(1).forEach(function (row) {
         var selection = d3.selectAll(`#${row[2]}`);
 
         selection
             .attr("class", "destination")
-            .datum(function() {
+            .datum(function () {
                 var topo_data = selection.datum();
                 topo_data["mass"] = row[1];
                 topo_data["colour"] = colourScale(row[1]);
                 return topo_data;
             })
-            .attr("fill", function() {
+            .attr("fill", function () {
                 return colourScale(row[1]);
             });
     });
@@ -1387,13 +1391,13 @@ function colorLagend(colourscale, domain, list_to_highlight) {
 
 
     // On mouseover show data on map
-    let mouseOver = function() {
+    let mouseOver = function () {
         d3.selectAll(".lagend_selected_country").attr("class", "destination");
         ofm_on_scale_hover = Math.log10(this.__data__);
         showBarSelectedDataOnMap(ofm_on_scale_hover)
     };
 
-    let mouseOut = function() {
+    let mouseOut = function () {
 
         d3.selectAll(".lagend_selected_country").attr("class", "destination");
 
@@ -1406,7 +1410,7 @@ function colorLagend(colourscale, domain, list_to_highlight) {
     }
 
     // Onclick on the legend show the related data on the map. 
-    let onClick = function(d) {
+    let onClick = function (d) {
 
         if (d == 0) {
 
@@ -1433,7 +1437,7 @@ function colorLagend(colourscale, domain, list_to_highlight) {
     
         */
 
-        list_to_highlight.slice(1).forEach(function(row) {
+        list_to_highlight.slice(1).forEach(function (row) {
 
             ofm_in_data = Math.trunc(Math.log10(row[1]));
 
@@ -1448,7 +1452,7 @@ function colorLagend(colourscale, domain, list_to_highlight) {
         .attr("width", lagend_width).attr("heigh", lagend_height)
         .attr("transform", `translate( ${90}, ${230})`);
 
-    domain.forEach(function(d, i) {
+    domain.forEach(function (d, i) {
 
 
         bar = lagend.append("g").datum(d);
@@ -1461,10 +1465,10 @@ function colorLagend(colourscale, domain, list_to_highlight) {
                 "width": band_width
 
             })
-            .attr("y", function() {
+            .attr("y", function () {
                 return band_height - i * band_height
             })
-            .attr("fill", function() {
+            .attr("fill", function () {
                 if (d != 0) {
                     return colourscale(d);
                 } else {
@@ -1477,9 +1481,9 @@ function colorLagend(colourscale, domain, list_to_highlight) {
             .attrs({
 
                 "x1": 0,
-                "y1": function() { return band_height - i * band_height + band_height / 2; },
+                "y1": function () { return band_height - i * band_height + band_height / 2; },
                 "x2": -lagend_axis_length,
-                "y2": function() { return band_height - i * band_height + band_height / 2; },
+                "y2": function () { return band_height - i * band_height + band_height / 2; },
                 "stroke": "black",
                 "stroke-width": "1px"
 
@@ -1490,8 +1494,8 @@ function colorLagend(colourscale, domain, list_to_highlight) {
             .attrs({
                 "dominant-baseline": "middle",
                 "class": "colorLagendText",
-                "x": function() { return -lagend_axis_length - 3; },
-                "y": function() { return band_height - i * band_height + band_height / 2; }
+                "x": function () { return -lagend_axis_length - 3; },
+                "y": function () { return band_height - i * band_height + band_height / 2; }
             });
 
         bar.on("mouseover", mouseOver);
@@ -1532,7 +1536,7 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
 
         // This function calculates the total based on the list it takes
         var migrant_total = 0;
-        array.forEach(function(row) {
+        array.forEach(function (row) {
             migrant_total += row[1];
         });
         return migrant_total;
@@ -1583,7 +1587,7 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
             .scaleBand()
             .range([0, width])
             .domain(
-                this_lot.map(function(x) {
+                this_lot.map(function (x) {
                     return x[0];
                 })
             )
@@ -1611,7 +1615,7 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
             .attr("class", "d3-tip-bar")
             .attr("id", "bar_tip")
             .offset([-10, 0])
-            .html(function(d) {
+            .html(function (d) {
 
                 if (data_type == "immigration") {
 
@@ -1638,24 +1642,24 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
             .append("rect")
             .attr("class", "mybar")
             .attr("fill", color)
-            .attr("x", function(d) {
+            .attr("x", function (d) {
                 if (x.bandwidth() <= buffer) {
                     return x(d[0]);
                 } else {
                     return x(d[0]) + (x.bandwidth() - buffer) / 2;
                 }
             })
-            .attr("y", function(d) {
+            .attr("y", function (d) {
                 return y(0);
             })
-            .attr("width", function() {
+            .attr("width", function () {
                 return Math.min(buffer, x.bandwidth());
             })
-            .attr("height", function(d) {
+            .attr("height", function (d) {
                 return height - y(0);
             })
             .call(bar_tip)
-            .on("mouseover", function(destination) {
+            .on("mouseover", function (destination) {
                 d3.selectAll("#selection_on_bar").attr("id", null);
                 bar_tip.show(destination);
                 source = [];
@@ -1664,41 +1668,48 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
                 if (data_type == "emigration") {
 
                     source = selected_country;
-                    target = destination.filter(function(d, i) { return i != 1 });
+                    target = destination.filter(function (d, i) { return i != 1 });
 
                 } else if (data_type == "immigration") {
 
-                    source = destination.filter(function(d, i) { return i != 1 });
+                    source = destination.filter(function (d, i) { return i != 1 });
                     target = selected_country;
 
                 }
 
-                drawArrow(source, target, data_type, color);
+                drawArrow(
+
+                    { latitude: source[3], longitude: source[2] },
+                    { latitude: target[3], longitude: target[2] },
+                    data_type,
+                    color
+
+                );
 
             })
-            .on("mouseout", function(destination) {
+            .on("mouseout", function (destination) {
                 bar_tip.hide(destination);
                 d3.select(this).attr("id", "selection_on_bar");
             })
             .transition()
             .duration(200)
-            .attr("x", function(d) {
+            .attr("x", function (d) {
                 if (x.bandwidth() <= buffer) {
                     return x(d[0]);
                 } else {
                     return x(d[0]) + (x.bandwidth() - buffer) / 2;
                 }
             })
-            .attr("y", function(d) {
+            .attr("y", function (d) {
                 return y(d[1]);
             })
-            .attr("width", function() {
+            .attr("width", function () {
                 return Math.min(buffer, x.bandwidth());
             })
-            .attr("height", function(d) {
+            .attr("height", function (d) {
                 return height - y(d[1]);
             })
-            .delay(function(d, i) { return (i * 50) });
+            .delay(function (d, i) { return (i * 50) });
 
         showMoreAndPreviousButtons();
 
@@ -1725,7 +1736,7 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
                 "x": "50%",
                 "y": "50%"
 
-            }).html(function() {
+            }).html(function () {
 
                 if (data_type == "emigration") {
 
@@ -1775,13 +1786,13 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
             });
 
             button_pannel.append("text").attrs({
-                    "x": buttonPannelDimensions.width / 2 + buttonPannelDimensions.button_gap,
-                    "y": 0,
-                    "class": "showNextOrPrevious"
-                })
+                "x": buttonPannelDimensions.width / 2 + buttonPannelDimensions.button_gap,
+                "y": 0,
+                "class": "showNextOrPrevious"
+            })
                 .html("Show More &#9654")
                 .attr("dominant-baseline", "middle")
-                .on("click", function() {
+                .on("click", function () {
                     return drawBarChart(
                         data_type,
                         year,
@@ -1794,13 +1805,13 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
                 });
 
             button_pannel.append("text").attrs({
-                    "x": buttonPannelDimensions.width / 2 - buttonPannelDimensions.button_gap,
-                    "y": 0,
-                    "class": "showNextOrPrevious"
-                })
+                "x": buttonPannelDimensions.width / 2 - buttonPannelDimensions.button_gap,
+                "y": 0,
+                "class": "showNextOrPrevious"
+            })
                 .html("&#9664 Show Previous")
                 .attr("dominant-baseline", "middle")
-                .on("click", function() {
+                .on("click", function () {
                     if (previous_lot !== null) {
                         return drawBarChart(data_type, year, previous_lot, selected_country, total_migration, list_of_countries_to_plot_untouched, color);
                     }
@@ -1822,16 +1833,16 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
                 .style("text-anchor", "end")
                 .attrs({
                     "class": "xyBarAxis",
-                    "id": function(d) { return `tick_${d.replace(new RegExp(" ", "g"), "_")}` }
+                    "id": function (d) { return `tick_${d.replace(new RegExp(" ", "g"), "_")}` }
                 });
 
-            textSelection.text(function(d) {
+            textSelection.text(function (d) {
                 if (d.length <= cutLength) {
                     return d;
                 } else { return d.slice(0, cutLength).concat('...'); }
             })
 
-            textSelection.on("mouseover", function(d) {
+            textSelection.on("mouseover", function (d) {
                 this_selection_id = d3.select(this).attr("id");
                 d3.select(`#${this_selection_id}`).text(d);
             });
@@ -1843,7 +1854,7 @@ function drawBarChart(data_type, year, list_of_countries_to_plot, selected_count
 
 }
 
-function drawArrow(source, target, data_type, color) {
+function drawArrow(source_location, target_location, data_type, color) {
 
     /*
         This function draws the arrow based on the country clicked on the bar. 
@@ -1852,16 +1863,16 @@ function drawArrow(source, target, data_type, color) {
     var svg = d3.select("#map");
     svg.selectAll(".connector_string").remove(); // Clear canvas
 
-    var projection = d3.select("#world_map").datum().projection
+    var projection = d3.select("#world_map").datum().projection;
 
     var source_coordinates = {
-        x: projection([source[2], source[3]])[0],
-        y: projection([source[2], source[3]])[1]
+        x: projection([source_location.longitude, source_location.latitude])[0],
+        y: projection([source_location.longitude, source_location.latitude])[1]
     };
 
     var destination_coordinates = {
-        x: projection([target[2], target[3]])[0],
-        y: projection([target[2], target[3]])[1]
+        x: projection([target_location.longitude, target_location.latitude])[0],
+        y: projection([target_location.longitude, target_location.latitude])[1]
     };
 
     // Arrow-Head Definition
@@ -1885,7 +1896,7 @@ function drawArrow(source, target, data_type, color) {
         "stroke": "white",
         "stroke-width": "0.4px",
         "r": 6,
-        "fill": function() {
+        "fill": function () {
             if (data_type == "emigration") {
                 return color;
             } else if (data_type == "immigration") {
@@ -1898,14 +1909,14 @@ function drawArrow(source, target, data_type, color) {
     // Append cirlce to the group
     g.append("circle").attrs({
 
-            "cx": destination_coordinates.x,
-            "cy": destination_coordinates.y,
-            "r": 0
+        "cx": destination_coordinates.x,
+        "cy": destination_coordinates.y,
+        "r": 0
 
-        }).transition().duration(600)
+    }).transition().duration(600)
         .attrs({
             "stroke": "white",
-            "fill": function() {
+            "fill": function () {
 
                 if (data_type == "emigration") {
                     return "#FBC02D";
@@ -1923,38 +1934,38 @@ function drawArrow(source, target, data_type, color) {
     g.append("path")
         .attr("id", "path_shadow")
         .attr("stroke", "black")
-        .attr("d", function() {
+        .attr("d", function () {
             return "M" + source_coordinates.x + "," + source_coordinates.y + "A" + 0 + "," + 0 +
                 " 0 0,1 " + source_coordinates.x + "," + source_coordinates.y;
         })
         .attr("stroke-linecap", "round")
         .transition()
         .duration(500)
-        .attr("d", function() {
+        .attr("d", function () {
             var dx = destination_coordinates.x - source_coordinates.x,
                 dy = destination_coordinates.y - source_coordinates.y,
                 dr = Math.sqrt(dx * dx + dy * dy + 200000);
             return "M" + source_coordinates.x + "," + source_coordinates.y + "A" + dr + "," + dr +
                 " 0 0,1 " + destination_coordinates.x + "," + destination_coordinates.y;
-        }).delay(function(d, i) { return (800 + i * 100) });
+        }).delay(function (d, i) { return (800 + i * 100) });
 
     // Append path 
     g.append("path")
         .attr("stroke", "black")
-        .attr("d", function() {
+        .attr("d", function () {
             return "M" + source_coordinates.x + "," + source_coordinates.y + "A" + 0 + "," + 0 +
                 " 0 0,1 " + source_coordinates.x + "," + source_coordinates.y;
         })
         .attr("stroke-linecap", "round")
         .transition()
         .duration(500)
-        .attr("d", function() {
+        .attr("d", function () {
             var dx = destination_coordinates.x - source_coordinates.x,
                 dy = destination_coordinates.y - source_coordinates.y,
                 dr = Math.sqrt(dx * dx + dy * dy);
             return "M" + source_coordinates.x + "," + source_coordinates.y + "A" + dr + "," + dr +
                 " 0 0,1 " + destination_coordinates.x + "," + destination_coordinates.y;
-        }).attr('marker-end', (d) => "url(#arrow)").delay(function(d, i) { return (800 + i * 100) });
+        }).attr('marker-end', (d) => "url(#arrow)").delay(function (d, i) { return (800 + i * 100) });
 
 }
 
@@ -1971,7 +1982,7 @@ function drawRingChart(data_selected, emmigrantVal, countryVal, total_val, accen
 
     // Mouse Hover and Removal Actions
 
-    mouseOver = function(d, i) {
+    mouseOver = function (d, i) {
         d3.select("#inner_arc_text").selectAll("text").remove();
 
         var number = Math.round((d.data.value * total_val) / 100);
@@ -1991,7 +2002,7 @@ function drawRingChart(data_selected, emmigrantVal, countryVal, total_val, accen
 
     };
 
-    mouseLeave = function() {
+    mouseLeave = function () {
         d3.select("#inner_arc_text").selectAll("text").remove();
 
         d3.select("#inner_arc_text").append("text")
@@ -2020,10 +2031,10 @@ function drawRingChart(data_selected, emmigrantVal, countryVal, total_val, accen
 
     var pie = d3
         .pie()
-        .value(function(d) {
+        .value(function (d) {
             return d.value;
         })
-        .sort(function(a, b) {
+        .sort(function (a, b) {
             return d3.ascending(a.key, b.key);
         });
 
@@ -2037,10 +2048,10 @@ function drawRingChart(data_selected, emmigrantVal, countryVal, total_val, accen
         .enter()
         .append("path").attrs({
 
-            "id": function(d) { return `arc_${d.data.key}` },
+            "id": function (d) { return `arc_${d.data.key}` },
             "class": "doughNutEmmigrants",
             "d": d3.arc().innerRadius(inner_radius).outerRadius(outer_radius),
-            "fill": function(d, i) { return color(i); }
+            "fill": function (d, i) { return color(i); }
 
         })
         .on("mouseover", mouseOver)
@@ -2059,12 +2070,12 @@ function drawRingChart(data_selected, emmigrantVal, countryVal, total_val, accen
 
     g.append("g").append("text").attrs({
 
-            "text-anchor": "middle",
-            "dominant-baseline": "auto",
-            "transform": `translate(${0}, ${-(outer_radius + thickness + margin)})`,
+        "text-anchor": "middle",
+        "dominant-baseline": "auto",
+        "transform": `translate(${0}, ${-(outer_radius + thickness + margin)})`,
 
-        })
-        .html(function() {
+    })
+        .html(function () {
             if (data_selected == "emigration") {
 
                 return `<tspan class="small_graph_heading">Top <tspan id="highlight_text" style="fill: ${accent_color}">\
@@ -2110,7 +2121,7 @@ function doughnutChartContent(year, country, gender, data_file, colourScale) {
     age_dict = {}
     Object.values(age_bracket_map).filter(distinct).forEach((bracket) => { age_dict[bracket] = null });
 
-    data_file.migrant_age[gender].forEach(function(row) {
+    data_file.migrant_age[gender].forEach(function (row) {
 
         if (Number(row.Year) == year && row.Destination == country) {
             for (const [age_bracket, percentage] of Object.entries(row)) {
@@ -2160,7 +2171,7 @@ function drawAgeDoughnutChart(age_data, gender, colourScale) {
     heading.append("text").attrs({
         "text-anchor": "middle",
         "dominant-baseline": "auto"
-    }).html(function() {
+    }).html(function () {
 
         return `Age Demographics of <tspan style="fill: ${colourScale(gender)}">
                                     ${gender.charAt(0).toUpperCase() + gender.slice(1)}
@@ -2179,7 +2190,7 @@ function drawAgeDoughnutChart(age_data, gender, colourScale) {
     });
     color = d3.scaleOrdinal().domain(Object.keys(age_data)).range(d3.schemeCategory10);
 
-    var pie = d3.pie().sort(null).value(function(data) { return data.value; });
+    var pie = d3.pie().sort(null).value(function (data) { return data.value; });
     var data_ready = pie(d3.entries(age_data));
     var arc = d3.arc().innerRadius(arcDimensions.innerRadius).outerRadius(arcDimensions.outerRadius);
 
@@ -2189,14 +2200,14 @@ function drawAgeDoughnutChart(age_data, gender, colourScale) {
         .append("path")
         .attr("d", arc)
         .attrs({
-            "fill": function(d) { return (color(d.data.key)) },
-            "id": function(d) {
+            "fill": function (d) { return (color(d.data.key)) },
+            "id": function (d) {
                 id = "elem" + d.data.key.replace(/-/g, '_').replace(new RegExp("\\+", "g"), '')
                 return id
             }
         })
-        .on("mouseover", function(d) { innerDoughnutHtml(arcGroup, { "key": d.data.key, "value": d.value }) })
-        .on("mouseout", function() { d3.select("#inner_doughnut_html").remove() })
+        .on("mouseover", function (d) { innerDoughnutHtml(arcGroup, { "key": d.data.key, "value": d.value }) })
+        .on("mouseout", function () { d3.select("#inner_doughnut_html").remove() })
 
     drawAgeLagend(arcGroup, ageDoughnutSVG, svgDimension, age_data, color);
 }
@@ -2212,9 +2223,9 @@ function innerDoughnutHtml(arcGroup, data) {
     arcGroup.append("text").attrs({
         "id": "inner_doughnut_html",
         "dominant-baseline": "middle",
-        "fill": function() { return color(data.key) }
+        "fill": function () { return color(data.key) }
 
-    }).html(function() { return `${data.value.toFixed(2)}%` })
+    }).html(function () { return `${data.value.toFixed(2)}%` })
 }
 
 function drawAgeLagend(arcGroup, svg, svgDimensions, data, colourScale) {
@@ -2245,9 +2256,9 @@ function drawAgeLagend(arcGroup, svg, svgDimensions, data, colourScale) {
         .append("g")
         .attrs({
 
-            "fill": function(d) { return colourScale(d[0]) },
-            "stroke": function(d) { return colourScale(d[0]) },
-            "id": function(d) {
+            "fill": function (d) { return colourScale(d[0]) },
+            "stroke": function (d) { return colourScale(d[0]) },
+            "id": function (d) {
                 id = "elem" + d[0].replace(/-/g, '_').replace(new RegExp("\\+", "g"), '');
                 return id
             }
@@ -2257,7 +2268,7 @@ function drawAgeLagend(arcGroup, svg, svgDimensions, data, colourScale) {
     one_group.append("circle").attrs({
 
         "cx": 0,
-        "cy": function(d, i) { return i * (lagendElementDimensions.circle_radius + lagendElementDimensions.group_spacing) },
+        "cy": function (d, i) { return i * (lagendElementDimensions.circle_radius + lagendElementDimensions.group_spacing) },
         "r": lagendElementDimensions.circle_radius
 
     });
@@ -2265,9 +2276,9 @@ function drawAgeLagend(arcGroup, svg, svgDimensions, data, colourScale) {
     one_group.append("line").attrs({
 
         "x1": lagendElementDimensions.circle_radius,
-        "y1": function(d, i) { return i * (lagendElementDimensions.circle_radius + lagendElementDimensions.group_spacing) },
+        "y1": function (d, i) { return i * (lagendElementDimensions.circle_radius + lagendElementDimensions.group_spacing) },
         "x2": lagendElementDimensions.circle_radius + lagendElementDimensions.line_length,
-        "y2": function(d, i) { return i * (lagendElementDimensions.circle_radius + lagendElementDimensions.group_spacing) },
+        "y2": function (d, i) { return i * (lagendElementDimensions.circle_radius + lagendElementDimensions.group_spacing) },
         "stroke-width": 1.5
 
     });
@@ -2277,12 +2288,12 @@ function drawAgeLagend(arcGroup, svg, svgDimensions, data, colourScale) {
         "dominant-baseline": "middle",
         "class": "genderLagendText",
         "x": lagendElementDimensions.circle_radius + lagendElementDimensions.line_length + 5,
-        "y": function(d, i) { return i * (lagendElementDimensions.circle_radius + lagendElementDimensions.group_spacing) },
+        "y": function (d, i) { return i * (lagendElementDimensions.circle_radius + lagendElementDimensions.group_spacing) },
         "stroke": "none"
 
-    }).text(function(d) { return d[0] });
+    }).text(function (d) { return d[0] });
 
-    one_group.on("mouseover", function(d) {
+    one_group.on("mouseover", function (d) {
 
         var this_id = d3.select(this).attr("id");
         d3.select(this).attr("class", "highlighted_ageGroup_lagend");
@@ -2294,7 +2305,7 @@ function drawAgeLagend(arcGroup, svg, svgDimensions, data, colourScale) {
 
     });
 
-    one_group.on("mouseout", function() {
+    one_group.on("mouseout", function () {
 
         d3.select(".highlighted_ageGroup_lagend").attr("class", null);
         d3.select("#ageArcGroup").selectAll(".highlighted_ageGroup_arc").attr("class", null);
@@ -2323,7 +2334,7 @@ function noDataAvailable(country) {
         ); // Show message that no data is available.
 }
 
-window.onload = function() {
+window.onload = function () {
     drawHeadingAreaWithButton();
     drawBodyArea();
 };
