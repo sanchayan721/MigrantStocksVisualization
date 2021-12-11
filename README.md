@@ -1,2 +1,3 @@
 # Population Migration Data Visualization
-[![Load Application](drawables/Screenshot.png "Click to load the application")](https://sanchayan721.github.io/MigrantStocksVisualization/)
+
+<a href="https://sanchayan721.github.io/MigrantStocksVisualization/" title="Link to the Application">![Load Application](drawables/Screenshot.png "Click to load the application")</a>
